@@ -1,0 +1,60 @@
+{
+  "name": "vuetify-bridge",
+  "description": "",
+  "version": "0.1.0",
+  "private": false,
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs.js"
+    }
+  },
+  "keywords": [
+    "vue3",
+    "vuetify",
+    "component-library",
+    "pnpm",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "packageManager": "pnpm@10.27.0",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "lint": "eslint --ext .ts,.vue src",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "type-check": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "vue": "^3.5.26",
+    "vuetify": "^3.11.6"
+  },
+  "peerDependencies": {
+    "vue": "^3.2.0",
+    "vuetify": "^3.3.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/vue": "^8.1.0",
+    "@types/jest": "^30.0.0",
+    "@vitejs/plugin-vue": "^6.0.3",
+    "@vue/test-utils": "^2.4.6",
+    "@vue/tsconfig": "^0.8.1",
+    "baseline-browser-mapping": "^2.9.11",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.0",
+    "vite-plugin-vuetify": "^2.1.2",
+    "vitest": "^4.0.16",
+    "vue-tsc": "^3.2.1"
+  }
+}
