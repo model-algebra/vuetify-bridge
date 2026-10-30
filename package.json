@@ -29,7 +29,7 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vue-tsc --noEmit && vite build && vue-tsc -p tsconfig.build.json",
     "lint": "eslint --ext .ts,.vue src",
     "test": "vitest",
     "test:watch": "vitest --watch",
