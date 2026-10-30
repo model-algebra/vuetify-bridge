@@ -13,6 +13,7 @@ export default defineConfig({
         pool: 'vmThreads', // Resolves the CSS extension error
         server: {
             deps: {
+                inline: ['vuetify'],
             },
         },
     }
