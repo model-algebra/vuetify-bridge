@@ -1,3 +1,4 @@
+import type { FieldFormOptions, ModelFormOptions } from "./form";
 import type { Constraint, Filterable, ModelFilter, Sortable, SortKey, TableConstraint } from "model-algebra-common";
 /**
  * A model field as accepted by the components: either a Field built by Model.fromJSON()
@@ -13,6 +14,8 @@ export interface FieldLike {
     constraints?: Constraint[] | Record<string, any>;
     sortable?: Sortable;
     filterable?: Filterable;
+    /** How the field is shown in forms; from a form model united with the model. */
+    form?: FieldFormOptions;
 }
 /** A model as accepted by the components: a Model instance or its plain JSON form. */
 export interface ModelLike {
@@ -24,6 +27,8 @@ export interface ModelLike {
     constraints?: TableConstraint[];
     sortings?: Record<string, SortKey[]>;
     filters?: Record<string, ModelFilter>;
+    /** How the model is shown in forms; from a form model united with the model. */
+    form?: ModelFormOptions;
 }
 /** The kind of control used to edit a field and of formatting used to show it. */
 export type FieldKind = 'integer' | 'number' | 'text' | 'longText' | 'boolean' | 'enum' | 'multiEnum' | 'tags' | 'date' | 'time' | 'datetime' | 'json' | 'object' | 'objectList' | 'unsupported';

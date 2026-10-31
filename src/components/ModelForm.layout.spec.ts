@@ -2,66 +2,70 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { defineComponent, h } from 'vue'
 import { VCheckbox, VSlider } from 'vuetify/components'
 import { eventJson, eventModel } from '../test/models'
-import { formOptions, withForm, type FieldControlProps, type ModelLike, type FormModel, type FormRowProps } from '..'
+import { union } from 'model-algebra-typescript'
+import { FormComponentsKey, formField, formOf, formOptions, type FieldControlProps, type FieldFormOptions, type FormRowProps, type ModelFormOptions } from '..'
 import ModelForm from './ModelForm.vue'
 import ModelFormField from './ModelFormField'
 
 const validEvent = { id: 7, title: 'Concert', code: null, seats: 100, status: 'DRAFT', startDate: '2026-11-01', endDate: '2026-11-02', created: null }
 
-function renderForm(form: FormModel, props: Record<string, unknown> = {}, slots: Record<string, any> = {}, global: Record<string, any> = {}) {
-    return render(ModelForm, { props: { model: withForm(eventModel, form), modelValue: { ...validEvent }, ...props }, slots, global })
+/** A form model: a model with only form options, by field, and of the model. */
+const formModel = (fields: Record<string, FieldFormOptions>, form?: ModelFormOptions) => ({
+    metadata: { name: 'Event' },
+    fields: Object.entries(fields).map(([name, options]) => ({ name, form: options })),
+    ...(form !== undefined ? { form } : {}),
+})
+
+function renderForm(form: ReturnType<typeof formModel>, props: Record<string, unknown> = {}, slots: Record<string, any> = {}, global: Record<string, any> = {}) {
+    return render(ModelForm, { props: { model: union(eventModel, form), modelValue: { ...validEvent }, ...props }, slots, global })
 }
 
 const lastRecord = (emitted: Record<string, unknown[][]>) => emitted['update:modelValue']?.slice(-1)[0]?.[0] as Record<string, unknown>
 const labels = () => Array.from(document.querySelectorAll('label.v-label:not(.v-field-label--floating)')).map(l => l.textContent?.trim())
 
-describe('withForm', () => {
-    test('combines the model with form options without changing the model', () => {
-        const combined = withForm(eventModel, { fields: { title: { label: 'Name', hint: 'Shown everywhere', cols: 12 } }, order: ['title'] })
+describe('form models', () => {
+    test('are united with the model, which stays as it is', () => {
+        const combined = union(eventModel, formModel({ title: { label: 'Name', hint: 'Shown everywhere', cols: 12 } }, { order: ['title'] }))
         const title = combined.fields.find(f => f.name === 'title')!
-        expect(title).toMatchObject({ label: 'Name', description: 'Shown everywhere', form: { cols: 12 } })
-        expect(title).toBeInstanceOf(eventModel.fields[0].constructor)
-        expect(combined).toBeInstanceOf(eventModel.constructor)
-        expect(combined.form?.order).toEqual(['title'])
-        expect((eventModel.fields.find(f => f.name === 'title') as any).label).toBeUndefined()
-        expect((eventModel as any).form).toBeUndefined()
+        expect(formOptions(title)).toEqual({ label: 'Name', hint: 'Shown everywhere', cols: 12 })
+        expect(formField(title)).toMatchObject({ label: 'Name', description: 'Shown everywhere', type: 'STRING' })
+        expect(formOf(combined)).toEqual({ order: ['title'] })
+        expect(formOptions(eventModel.fields.find(f => f.name === 'title')!)).toEqual({})
+        expect(formOf(eventModel)).toEqual({})
     })
 
-    test('works on the model in plain JSON form', () => {
-        expect(formOptions(withForm(eventJson as ModelLike, { fields: { seats: { hidden: true } } }).fields.find(f => f.name === 'seats')!)).toEqual({ hidden: true })
-    })
-
-    test('rejects fields the model does not have', () => {
-        expect(() => withForm(eventModel, { fields: { tilte: {} }, order: ['title', 'place'] }))
-            .toThrow('The form of model Event names unknown fields: tilte, place')
+    test('work on the model in plain JSON form too', () => {
+        const combined = union(eventJson, formModel({ seats: { hidden: true } }))
+        expect(formOptions(combined.fields.find((f: any) => f.name === 'seats')!)).toEqual({ hidden: true })
     })
 })
 
 describe('ModelForm with a form model', () => {
     test('shows the fields in its order, with its labels, without hidden ones', () => {
-        renderForm({ order: ['seats', 'title', 'code'], fields: { code: { hidden: true }, title: { label: 'Name' } } })
+        renderForm(formModel({ code: { hidden: true }, title: { label: 'Name' } }, { order: ['seats', 'title', 'code'] }))
         expect(labels()).toEqual(['Seats', 'Name'])
     })
 
     test('the fields prop still chooses the fields', () => {
-        renderForm({ order: ['seats', 'title'] }, { fields: ['title'] })
+        renderForm(formModel({}, { order: ['seats', 'title'] }), { fields: ['title'] })
         expect(labels()).toEqual(['Title'])
     })
 
     test('gives the control attributes', () => {
-        renderForm({ order: ['seats'], fields: { seats: { props: { suffix: 'seats', variant: 'outlined' } } } })
+        renderForm(formModel({ seats: { props: { suffix: 'seats', variant: 'outlined' } } }, { order: ['seats'] }))
         expect(screen.getByText('seats')).toHaveClass('v-text-field__suffix__text')
         expect(document.querySelector('.v-field--variant-outlined')).not.toBeNull()
     })
 
     test('sets the width of fields on the grid', () => {
-        renderForm({ order: ['title', 'seats'], fields: { title: { cols: 4 } } })
+        renderForm(formModel({ title: { cols: 4 } }, { order: ['title', 'seats'] }))
         const cols = Array.from(document.querySelectorAll('.v-col-12')).map(col => Array.from(col.classList).find(c => c.startsWith('v-col-md-')))
         expect(cols).toEqual(['v-col-md-4', 'v-col-md-6'])
     })
 
     test('binds any Vuetify input as the control, with label, rules and conversion', async () => {
-        const { emitted } = renderForm({ order: ['seats'], fields: { seats: { control: VSlider, props: { min: 1, max: 500, step: 1 } } } })
+        const { emitted } = renderForm(formModel({ seats: { control: 'VSlider', props: { min: 1, max: 500, step: 1 } } }, { order: ['seats'] }),
+            { components: { VSlider } })
         const slider = screen.getByRole('slider')
         expect(slider).toHaveAttribute('aria-valuenow', '100')
         expect(screen.getByText('Seats')).toBeInTheDocument()
@@ -69,10 +73,20 @@ describe('ModelForm with a form model', () => {
         expect(lastRecord(emitted())).toMatchObject({ seats: 101 })
     })
 
-    test('resolves controls named by globally registered components', () => {
-        renderForm({ order: ['status'], fields: { status: { control: 'MyCheckbox', props: { trueValue: 'PUBLISHED', falseValue: 'DRAFT' } } } },
-            {}, {}, { components: { MyCheckbox: VCheckbox } })
+    test('finds named components in the app and among globally registered ones', () => {
+        const status = formModel({ status: { control: 'MyCheckbox', props: { trueValue: 'PUBLISHED', falseValue: 'DRAFT' } } }, { order: ['status'] })
+        renderForm(status, {}, {}, { provide: { [FormComponentsKey as symbol]: { MyCheckbox: VCheckbox } } })
         expect(screen.getByLabelText('Status')).not.toBeChecked()
+        document.body.innerHTML = ''
+        renderForm(status, {}, {}, { components: { MyCheckbox: VCheckbox } })
+        expect(screen.getByLabelText('Status')).not.toBeChecked()
+    })
+
+    test('components given to the form win over those of the app', () => {
+        const Other = defineComponent({ props: ['field'], setup: () => () => h('b', 'other') })
+        renderForm(formModel({ title: { control: 'Title' } }, { order: ['title'] }), { components: { Title: Other } },
+            {}, { provide: { [FormComponentsKey as symbol]: { Title: VCheckbox } } })
+        expect(screen.getByText('other')).toBeInTheDocument()
     })
 
     test('gives controls of fields the props of field controls', async () => {
@@ -83,7 +97,7 @@ describe('ModelForm with a form model', () => {
                 h('button', { type: 'button', onClick: () => emit('update:modelValue', String(props.modelValue).toUpperCase()) },
                     `${props.field.name}: ${props.modelValue}`),
         })
-        const { emitted } = renderForm({ order: ['title'], fields: { title: { control: Upper } } })
+        const { emitted } = renderForm(formModel({ title: { control: 'Upper' } }, { order: ['title'] }), { components: { Upper } })
         await fireEvent.click(screen.getByText('title: Concert'))
         expect(lastRecord(emitted())).toMatchObject({ title: 'CONCERT' })
     })
@@ -94,7 +108,7 @@ describe('ModelForm with a form model', () => {
             setup: (props: FormRowProps, { slots }) => () =>
                 h('section', { 'data-testid': 'row' }, [h('h3', `${props.field.name} of ${props.record.title} in ${props.mode}`), slots.default?.()]),
         })
-        renderForm({ order: ['seats'], fields: { seats: { row: Row } } }, { mode: 'view' })
+        renderForm(formModel({ seats: { row: 'Row' } }, { order: ['seats'] }), { mode: 'view', components: { Row } })
         expect(screen.getByRole('heading')).toHaveTextContent('seats of Concert in view')
         expect(screen.getByLabelText('Seats')).toHaveAttribute('readonly')
     })
@@ -104,17 +118,17 @@ describe('ModelForm with a form model', () => {
             props: ['submit', 'cancel', 'validate', 'mode', 'record', 'submitText', 'cancelText'],
             setup: (props: any) => () => h('button', { type: 'button', onClick: props.submit }, `${props.submitText} ${props.record.title}`),
         })
-        renderForm({ submitText: 'Publish', cancelText: 'Discard' })
+        renderForm(formModel({}, { submitText: 'Publish', cancelText: 'Discard' }))
         expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument()
         expect(screen.getByRole('button', { name: 'Discard' })).toBeInTheDocument()
         document.body.innerHTML = ''
-        const { emitted } = renderForm({ submitText: 'Publish', actions: Actions })
+        const { emitted } = renderForm(formModel({}, { submitText: 'Publish', actions: 'Actions' }), { components: { Actions } })
         await fireEvent.click(screen.getByRole('button', { name: 'Publish Concert' }))
         await waitFor(() => expect(emitted().submit).toEqual([[validEvent]]))
     })
 
     test('props override the texts of the form model', () => {
-        renderForm({ submitText: 'Publish' }, { submitText: 'Send' })
+        renderForm(formModel({}, { submitText: 'Publish' }), { submitText: 'Send' })
         expect(screen.getByRole('button', { name: 'Send' })).toBeInTheDocument()
     })
 })
@@ -126,7 +140,7 @@ describe('ModelForm with a layout of its own', () => {
     ])
 
     test('places fields with ModelFormField, which keeps their form options', () => {
-        render(ModelForm, { props: { model: withForm(eventModel, { fields: { title: { label: 'Name' } } }), modelValue: { ...validEvent } }, slots: { default: layout } })
+        render(ModelForm, { props: { model: union(eventModel, formModel({ title: { label: 'Name' } })), modelValue: { ...validEvent } }, slots: { default: layout } })
         expect(labels()).toEqual(['Name', 'Seats', 'Start date'])
         expect(screen.getByText('seats')).toBeInTheDocument()
     })

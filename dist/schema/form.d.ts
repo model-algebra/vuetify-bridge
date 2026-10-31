@@ -1,6 +1,6 @@
 import type { Component } from "vue";
 import type { FieldLike, ModelLike } from "./field";
-/** A component, or the name of a globally registered one, e.g. 'VSlider'. */
+/** The name of a component (see above), or, in code, the component itself. */
 export type ComponentLike = Component | string;
 /**
  * Props of a row component: it replaces the whole place of a field in the form and gets the default control of the
@@ -14,7 +14,7 @@ export interface FormRowProps {
     mode: string;
     record: Record<string, unknown>;
 }
-/** How one field is shown in a form. */
+/** How one field is shown in a form: the `form` key of a field. */
 export interface FieldFormOptions {
     /** Label of the control instead of the one of the field. */
     label?: string;
@@ -35,10 +35,8 @@ export interface FieldFormOptions {
     /** Replaces the whole place of the field; gets FormRowProps and the control as its default slot. */
     row?: ComponentLike;
 }
-/** How a model is shown in a form. */
-export interface FormModel {
-    /** Options of fields, by field name. */
-    fields?: Record<string, FieldFormOptions>;
+/** How a model is shown in a form: the `form` key of the model. */
+export interface ModelFormOptions {
     /** Fields to show, in this order; all fields of the model by default. */
     order?: string[];
     submitText?: string;
@@ -46,18 +44,9 @@ export interface FormModel {
     /** Replaces the Save and Cancel buttons; gets the props of the actions slot. */
     actions?: ComponentLike;
 }
-/** A field combined with its form options. */
-export interface FormFieldLike extends FieldLike {
-    form?: FieldFormOptions;
-}
-/** A model combined with a form model. */
-export interface FormModelLike extends ModelLike {
-    fields: FormFieldLike[];
-    form?: FormModel;
-}
-/** The model with the form options of the form model: what ModelForm shows. */
-export declare function withForm<M extends ModelLike>(model: M, form: FormModel): M & FormModelLike;
 /** Form options of a field, if it has any. */
 export declare const formOptions: (field: FieldLike) => FieldFormOptions;
-/** Form model of a model, if it was combined with one. */
-export declare const formOf: (model: ModelLike) => FormModel;
+/** Form options of a model, if it has any. */
+export declare const formOf: (model: ModelLike) => ModelFormOptions;
+/** The field as the form shows it: with the label and the hint of its form options. */
+export declare function formField(field: FieldLike): FieldLike;

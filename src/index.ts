@@ -15,5 +15,7 @@ export { default as ModelTableFilters } from './components/ModelTableFilters.vue
 export { useFieldInput } from './composables/useFieldInput';
 export { useModels, ModelsKey } from './composables/useModels';
 export { useFormFields } from './composables/useFormFields';
+export { FormComponentsKey, useFormComponents } from './composables/useFormComponents';
+export type { FormComponents } from './composables/useFormComponents';
 export type { FormFields } from './composables/useFormFields';
 export * from './schema';

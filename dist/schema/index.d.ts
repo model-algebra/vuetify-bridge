@@ -11,5 +11,5 @@ export { toResolver } from "./resolver";
 export type { ModelResolver, ModelsOption } from "./resolver";
 export { hasListOptions, listSortOptions, listFilterOptions, sortLabel, filterLabel, filterField, isFilterOn, filterRows, sortRows, sortOptionOf, sortParameter, listQuery, } from "./list";
 export type { SortItem, ListFunctions } from "./list";
-export { withForm, formOptions, formOf } from "./form";
-export type { ComponentLike, FieldFormOptions, FormModel, FormFieldLike, FormModelLike, FormRowProps } from "./form";
+export { formOptions, formOf, formField } from "./form";
+export type { ComponentLike, FieldFormOptions, ModelFormOptions, FormRowProps } from "./form";

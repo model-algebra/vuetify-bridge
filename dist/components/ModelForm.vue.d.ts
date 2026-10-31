@@ -1,3 +1,4 @@
+import { type FormComponents } from '../composables/useFormComponents';
 import { type FieldLike, type FormMode, type ModelLike, type ModelsOption, type ValidationMessages } from '../schema';
 type __VLS_Props = {
     model: ModelLike;
@@ -15,6 +16,8 @@ type __VLS_Props = {
     cancelText?: string;
     /** Don't show the Save and Cancel buttons; use the actions slot or the exposed validate() instead. */
     hideActions?: boolean;
+    /** Components the form options of the model name, for this form and the ones inside. */
+    components?: FormComponents;
 };
 /** Props of the actions slot and of the actions component of the form model. */
 interface ActionProps {

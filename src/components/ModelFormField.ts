@@ -1,12 +1,10 @@
 // One field of the enclosing form, as its form options say: for custom layouts in the default slot of ModelForm
-import { computed, defineComponent, h, resolveDynamicComponent, type Component, type PropType } from 'vue'
+import { computed, defineComponent, h, type Component, type PropType } from 'vue'
 import ModelField from './fields/ModelField.vue'
 import ModelInputControl from './fields/ModelInputControl.vue'
+import { useFormComponents } from '../composables/useFormComponents'
 import { useFormFields } from '../composables/useFormFields'
-import { formOptions, isEditable, isVisible, type ComponentLike, type FieldLike } from '../schema'
-
-const resolve = (component: ComponentLike) =>
-    (typeof component === 'string' ? resolveDynamicComponent(component) : component) as Component | string
+import { formField, formOptions, isEditable, isVisible, type FieldLike } from '../schema'
 
 /** Whether the component declares the prop. */
 function declares(component: Component | string, prop: string): boolean {
@@ -26,6 +24,7 @@ export default defineComponent({
     },
     setup(props, { attrs }) {
         const form = useFormFields()
+        const resolve = useFormComponents()
 
         const field = computed(() => {
             if (props.field !== undefined) return props.field
@@ -36,8 +35,9 @@ export default defineComponent({
         })
 
         return () => {
-            const current = field.value
-            const options = formOptions(current)
+            const options = formOptions(field.value)
+            // With the label and hint of the form options
+            const current = formField(field.value)
             const mode = form.mode()
             if (options.hidden === true || !isVisible(current, mode)) return null
 

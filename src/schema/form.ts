@@ -2,12 +2,21 @@ import type { Component } from "vue";
 import type { FieldLike, ModelLike } from "./field";
 
 /*
- * How a model is shown in a form, kept apart from the model: a form model names fields of the model and says how to
- * show them. withForm() combines both into the model given to ModelForm, so forms need few templates and the model
- * itself stays free of anything about forms.
+ * How a model is shown in a form, kept apart from the model: a form model is a model of its own, with the same
+ * name and the fields it says something about, carrying form options under the `form` key of fields and of the model.
+ * The union of both models (union() of model-algebra-typescript) is what ModelForm is given, so forms need few
+ * templates and the main model stays free of anything about forms:
+ *
+ *   { "metadata": { "name": "Event" },
+ *     "fields": [{ "name": "title", "form": { "label": "Name", "cols": 12 } },
+ *                { "name": "status", "form": { "control": "StatusChips" } }],
+ *     "form": { "order": ["title", "status"], "submitText": "Publish" } }
+ *
+ * Components are named, so form models are JSON like any model; ModelForm finds them in its components prop, in
+ * components provided with FormComponentsKey, or among globally registered components.
  */
 
-/** A component, or the name of a globally registered one, e.g. 'VSlider'. */
+/** The name of a component (see above), or, in code, the component itself. */
 export type ComponentLike = Component | string;
 
 /**
@@ -23,7 +32,7 @@ export interface FormRowProps {
     record: Record<string, unknown>;
 }
 
-/** How one field is shown in a form. */
+/** How one field is shown in a form: the `form` key of a field. */
 export interface FieldFormOptions {
     /** Label of the control instead of the one of the field. */
     label?: string;
@@ -45,10 +54,8 @@ export interface FieldFormOptions {
     row?: ComponentLike;
 }
 
-/** How a model is shown in a form. */
-export interface FormModel {
-    /** Options of fields, by field name. */
-    fields?: Record<string, FieldFormOptions>;
+/** How a model is shown in a form: the `form` key of the model. */
+export interface ModelFormOptions {
     /** Fields to show, in this order; all fields of the model by default. */
     order?: string[];
     submitText?: string;
@@ -57,42 +64,18 @@ export interface FormModel {
     actions?: ComponentLike;
 }
 
-/** A field combined with its form options. */
-export interface FormFieldLike extends FieldLike {
-    form?: FieldFormOptions;
-}
-
-/** A model combined with a form model. */
-export interface FormModelLike extends ModelLike {
-    fields: FormFieldLike[];
-    form?: FormModel;
-}
-
-/** A copy of the object with other properties, of the same class, so Model and Field instances stay what they are. */
-function copy<T extends object>(source: T, changes: Record<string, unknown>): T {
-    return Object.assign(Object.create(Object.getPrototypeOf(source)), source, changes);
-}
-
-/** The model with the form options of the form model: what ModelForm shows. */
-export function withForm<M extends ModelLike>(model: M, form: FormModel): M & FormModelLike {
-    const names = new Set(model.fields.map(field => field.name));
-    const unknown = [...Object.keys(form.fields ?? {}), ...(form.order ?? [])].filter(name => !names.has(name));
-    if (unknown.length > 0)
-        throw new Error(`The form of model ${model.metadata.name} names unknown fields: ${[...new Set(unknown)].join(', ')}`);
-    const fields = model.fields.map(field => {
-        const options = form.fields?.[field.name];
-        if (options === undefined) return field;
-        return copy(field, {
-            form: options,
-            ...(options.label !== undefined ? { label: options.label } : {}),
-            ...(options.hint !== undefined ? { description: options.hint } : {}),
-        });
-    });
-    return copy(model, { fields, form }) as M & FormModelLike;
-}
-
 /** Form options of a field, if it has any. */
-export const formOptions = (field: FieldLike): FieldFormOptions => (field as FormFieldLike).form ?? {};
+export const formOptions = (field: FieldLike): FieldFormOptions => field.form ?? {};
 
-/** Form model of a model, if it was combined with one. */
-export const formOf = (model: ModelLike): FormModel => (model as FormModelLike).form ?? {};
+/** Form options of a model, if it has any. */
+export const formOf = (model: ModelLike): ModelFormOptions => model.form ?? {};
+
+/** The field as the form shows it: with the label and the hint of its form options. */
+export function formField(field: FieldLike): FieldLike {
+    const { label, hint } = formOptions(field);
+    if (label === undefined && hint === undefined) return field;
+    return Object.assign(Object.create(Object.getPrototypeOf(field)), field, {
+        ...(label !== undefined ? { label } : {}),
+        ...(hint !== undefined ? { description: hint } : {}),
+    });
+}

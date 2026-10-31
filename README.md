@@ -125,11 +125,12 @@ Messages are in English. Override any of them with the `messages` prop:
 | `model` | `Model` | | |
 | `v-model` | `Record<string, unknown>` | | The record; replaced with a new object on every change. |
 | `mode` | `'create' \| 'edit' \| 'view'` | `'edit'` | See below. |
-| `fields` | `string[]` | all | Fields to show, in this order; the `order` of the form model by default. |
+| `fields` | `string[]` | all | Fields to show, in this order; the `order` of the form options by default. |
 | `exclude` | `string[]` | | Fields not to show. |
 | `messages` | `Partial<ValidationMessages>` | | |
 | `models` | `ModelsOption` | | Models referenced by `OBJECT` fields. |
-| `submitText`, `cancelText` | `string` | `Save`, `Cancel` | Override the texts of the form model. |
+| `submitText`, `cancelText` | `string` | `Save`, `Cancel` | Override the texts of the form options. |
+| `components` | `Record<string, Component>` | | Components the form options name. |
 | `hideActions` | `boolean` | `false` | |
 
 Modes:
@@ -155,31 +156,36 @@ Exposed: `validate(): Promise<boolean>`, `resetValidation()`.
 
 #### Form models
 
-How a model is shown in a form lives in a form model, apart from the model. `withForm(model, formModel)` combines
-them into the model given to the form; the model itself is not changed, so it stays the same for tables, APIs and
-databases. Most of what would take templates is then said in the form model:
+How a model is shown in a form lives in a form model, apart from the model: a model of its own, with the same name
+and only the fields it says something about, carrying form options under the `form` key of fields and of the model.
+The union of the two models ([`union()` of model-algebra-typescript](https://github.com/model-algebra/model-algebra-typescript))
+is what the form gets; the model itself stays the same for tables, APIs and databases. Most of what would take
+templates is said in the form model, which is JSON like any model:
 
-```ts
-import { withForm, type FormModel } from 'vuetify-bridge'
-
-const eventForm: FormModel = {
-    order: ['title', 'status', 'seats', 'price', 'startDate', 'endDate'],
-    fields: {
-        title: { label: 'Name', cols: 12 },
-        seats: { control: 'VSlider', props: { min: 1, max: 500, step: 1, thumbLabel: true } },
-        price: { props: { prefix: '$' } },
-        status: { control: StatusChips },
-        notes: { hidden: true },
-    },
-    submitText: 'Publish',
+```json
+{
+    "metadata": { "name": "Event" },
+    "fields": [
+        { "name": "title", "form": { "label": "Name", "cols": 12 } },
+        { "name": "status", "form": { "control": "StatusChips" } },
+        { "name": "seats", "form": { "control": "VSlider", "props": { "min": 1, "max": 500, "step": 1 } } },
+        { "name": "price", "form": { "props": { "prefix": "$" } } },
+        { "name": "notes", "form": { "hidden": true } }
+    ],
+    "form": { "order": ["title", "status", "seats", "price"], "submitText": "Publish" }
 }
 ```
 
-```vue
-<ModelForm v-model="event" :model="withForm(eventModel, eventForm)" />
+```ts
+import { union } from 'model-algebra-typescript'
+const eventFormModel = union(eventModel, eventForm)   // a Model when eventModel is one
 ```
 
-Options of a field:
+```vue
+<ModelForm v-model="event" :model="eventFormModel" :components="{ StatusChips, VSlider }" />
+```
+
+Options of a field (`form` of the field):
 
 | Option | |
 |---|---|
@@ -187,8 +193,19 @@ Options of a field:
 | `hidden` | Not shown. |
 | `cols` | Width on the 12-column grid of wider screens; 6, or 12 for long text and structured values, by default. |
 | `props` | Attributes of the control, e.g. `{ prefix: '$', variant: 'outlined' }`. |
-| `control` | Replaces the control: a component, or the name of a globally registered one. |
+| `control` | Replaces the control. |
 | `row` | Replaces the whole place of the field; gets the control as its default slot. |
+
+Options of the form (`form` of the model): `order` (fields to show, in this order), `submitText`, `cancelText`, and
+`actions`, a component that replaces the action bar and gets the props of the `#actions` slot.
+
+Components are named. A form looks them up in its `components` prop, then in components provided to the app, then
+among globally registered components; sub-forms and fields of a layout of one's own see those of their form:
+
+```ts
+import { FormComponentsKey } from 'vuetify-bridge'
+app.provide(FormComponentsKey, { StatusChips, FreeRow, VSlider })
+```
 
 A `control` that declares a `field` prop is a field control: it gets `field`, `v-model`, `readonly`, `messages`
 (and `mode`, when it declares it), as the controls of the library do, and can use `useFieldInput()`. Any other
@@ -198,10 +215,7 @@ field's type, `label`, `hint`, `rules` from the constraints, and `readonly`.
 A `row` gets `{ field, value, update, readonly, mode, record }`, and the control in its default slot: use it to add
 a caption, buttons or help around the control, or leave the slot out and edit the value yourself.
 
-Options of the form: `order` (fields to show, in this order), `submitText`, `cancelText`, and `actions`, a component
-that replaces the action bar and gets the props of the `#actions` slot.
-
-Unknown field names in a form model are an error, so a renamed field does not silently lose its options.
+In code, `control`, `row` and `actions` can also be components themselves rather than names.
 
 #### Layouts of your own
 
@@ -209,7 +223,7 @@ The default slot replaces the grid. Place fields with `ModelFormField`, which sh
 validation and mode; the rest (table-level checks, buttons, submit) stays with the form:
 
 ```vue
-<ModelForm v-model="event" :model="withForm(eventModel, eventForm)">
+<ModelForm v-model="event" :model="eventFormModel">
     <v-row>
         <v-col cols="8"><ModelFormField name="title" /></v-col>
         <v-col cols="4"><ModelFormField name="status" /></v-col>
@@ -326,7 +340,8 @@ The logic behind the components is exported for use in your own controls:
 - **`formatValue`**: display text of a value.
 - **`toInput`, `fromInput`**: conversion between record values and control values.
 - **`emptyRecord`, `primaryKeyField`, `selectFields`**: model-level helpers.
-- **`withForm`, `formOptions`, `formOf`**: form models; **`ModelInputControl`** binds any Vuetify input to a field.
+- **`formOptions`, `formOf`, `formField`**: form options of fields and models; **`FormComponentsKey`**,
+  **`useFormComponents`**: components form models name; **`ModelInputControl`** binds any Vuetify input to a field.
 - **`referencedModel`, `toResolver`, `useModels`, `ModelsKey`**: references between models.
 - **`filterRows`, `sortRows`, `listQuery`, `listSortOptions`, `listFilterOptions`, `sortLabel`, `filterLabel`**: sorting
   and filtering of lists.

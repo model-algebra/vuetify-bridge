@@ -3,6 +3,7 @@
 import { computed, ref, useSlots, watch } from 'vue'
 import { VBtn, VForm, VSpacer } from 'vuetify/components'
 import ModelFields from './ModelFields.vue'
+import { provideFormComponents, type FormComponents } from '../composables/useFormComponents'
 import { useModels } from '../composables/useModels'
 import {
     emptyRecord, formOf,
@@ -25,6 +26,8 @@ const props = withDefaults(defineProps<{
     cancelText?: string
     /** Don't show the Save and Cancel buttons; use the actions slot or the exposed validate() instead. */
     hideActions?: boolean
+    /** Components the form options of the model name, for this form and the ones inside. */
+    components?: FormComponents
 }>(), {
     mode: 'edit',
 })
@@ -69,6 +72,7 @@ defineSlots<{
 }>()
 
 useModels(() => props.models)
+const resolve = provideFormComponents(() => props.components)
 
 const slots = useSlots()
 const fieldSlots = computed(() => Object.keys(slots).filter(name => name.startsWith('field.')) as `field.${string}`[])
@@ -121,7 +125,7 @@ defineExpose({
         </ModelFields>
         <slot v-if="mode !== 'view'" name="actions" v-bind="actionProps">
             <template v-if="!hideActions">
-                <component :is="formModel.actions" v-if="formModel.actions !== undefined" v-bind="actionProps" />
+                <component :is="resolve(formModel.actions)" v-if="formModel.actions !== undefined" v-bind="actionProps" />
                 <div v-else class="d-flex ga-2">
                     <VSpacer />
                     <VBtn variant="text" @click="cancel">{{ actionProps.cancelText }}</VBtn>

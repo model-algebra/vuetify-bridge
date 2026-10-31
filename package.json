@@ -53,6 +53,7 @@
     "@vue/tsconfig": "^0.8.1",
     "baseline-browser-mapping": "^2.9.11",
     "jsdom": "^29.1.1",
+    "model-algebra-typescript": "github:model-algebra/model-algebra-typescript",
     "typescript": "^5.9.3",
     "vite": "^7.3.0",
     "vite-plugin-vuetify": "^2.1.2",
