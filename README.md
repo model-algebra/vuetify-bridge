@@ -16,13 +16,7 @@ Labels, input types, validation rules and value formatting all come from the fie
 pnpm add github:model-algebra/vuetify-bridge github:model-algebra/common-typescript
 ```
 
-Both packages build themselves when installed. With pnpm, allow that in `pnpm-workspace.yaml`:
-
-```yaml
-onlyBuiltDependencies:
-  - model-algebra-common
-  - vuetify-bridge
-```
+The built packages are in their repositories, so nothing is built when they are installed.
 
 `vue` (3.4+) and `vuetify` (3.5+) are peer dependencies. Import the library styles once:
 
@@ -233,6 +227,15 @@ pnpm test          # vitest
 pnpm type-check
 pnpm build         # dist/: ES and UMD bundles, type declarations, style.css
 ```
+
+`dist/` is committed, because other projects install the package from GitHub without building it. Enable the
+pre-commit hook once per clone; it rebuilds `dist/` and adds it to every commit that changes the sources:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+CI fails when the committed `dist/` differs from a build of the sources.
 
 [example-site](https://github.com/model-algebra/example-site) shows every component on example models; with a
 checkout of vuetify-bridge next to it, `pnpm dev:local` runs it on the sources of the checkout.
