@@ -1,6 +1,6 @@
 {
   "name": "vuetify-bridge",
-  "description": "",
+  "description": "Vuetify components driven by model-algebra models: field inputs, forms and tables",
   "version": "0.1.0",
   "private": false,
   "main": "dist/index.umd.js",
@@ -12,13 +12,14 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.es.js",
       "require": "./dist/index.umd.js"
-    }
+    },
+    "./style.css": "./dist/vuetify-bridge.css"
   },
   "keywords": [
     "vue3",
     "vuetify",
+    "model-algebra",
     "component-library",
-    "pnpm",
     "typescript"
   ],
   "author": "",
@@ -36,12 +37,11 @@
     "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "vue": "^3.5.26",
-    "vuetify": "^3.11.6"
+    "model-algebra-common": "github:model-algebra/common-typescript"
   },
   "peerDependencies": {
-    "vue": "^3.2.0",
-    "vuetify": "^3.3.0"
+    "vue": "^3.4.0",
+    "vuetify": "^3.5.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
@@ -56,6 +56,11 @@
     "vite": "^7.3.0",
     "vite-plugin-vuetify": "^2.1.2",
     "vitest": "^4.0.16",
-    "vue-tsc": "^3.2.1"
-  }
+    "vue": "^3.5.26",
+    "vue-tsc": "^3.2.1",
+    "vuetify": "^3.11.6"
+  },
+  "sideEffects": [
+    "*.css"
+  ]
 }

@@ -1,0 +1,165 @@
+import type { Constraint, TableConstraint } from "model-algebra-common";
+
+/**
+ * A model field as accepted by the components: either a Field built by Model.fromJSON()
+ * (constraints as an array of Constraint) or the plain JSON object (constraints as a map).
+ */
+export interface FieldLike {
+    name: string;
+    type: string;
+    description?: string;
+    parameters?: Record<string, any>;
+    constraints?: Constraint[] | Record<string, any>;
+}
+
+/** A model as accepted by the components: a Model instance or its plain JSON form. */
+export interface ModelLike {
+    metadata: { name: string, description?: string };
+    fields: FieldLike[];
+    constraints?: TableConstraint[];
+}
+
+/** The kind of control used to edit a field and of formatting used to show it. */
+export type FieldKind =
+    | 'integer'
+    | 'number'
+    | 'text'
+    | 'longText'
+    | 'boolean'
+    | 'enum'
+    | 'multiEnum'
+    | 'tags'
+    | 'date'
+    | 'time'
+    | 'datetime'
+    | 'json'
+    | 'unsupported';
+
+/** How a record is edited: create shows no generated fields, view makes every field read-only. */
+export type FormMode = 'create' | 'edit' | 'view';
+
+type TypeDescriptor = { type: string, parameters?: Record<string, any> };
+
+// Integer types with the range of values they can hold; INT64 and integer are limited only by Number
+export const INTEGER_RANGES = new Map<string, [number, number] | undefined>([
+    ['integer', undefined],
+    ['INT16', [-32768, 32767]],
+    ['INT32', [-2147483648, 2147483647]],
+    ['INT64', undefined],
+]);
+
+const FLOAT_TYPES = new Set(['number', 'FLOAT32', 'FLOAT64', 'DECIMAL']);
+const TEXT_TYPES = new Set(['string', 'STRING', 'UUID', 'DURATION']);
+const DATETIME_TYPES = new Set(['DATETIME', 'TIMESTAMP', 'TIMESTAMP_TZ']);
+const JSON_TYPES = new Set(['JSON', 'OBJECT', 'UNION', 'object', 'array']);
+
+/** Constraints of the field as a map, whichever form the field was given in. */
+export function fieldConstraints(field: FieldLike): Record<string, any> {
+    const constraints = field.constraints;
+    if (constraints === undefined || constraints === null) return {};
+    if (Array.isArray(constraints))
+        return Object.fromEntries(constraints.map(constraint => [constraint.name, constraint.value]));
+    return constraints;
+}
+
+/** Values allowed by the enum constraint, or by the ENUM type of the field or of the items of an ARRAY field. */
+export function enumValues(field: FieldLike): string[] | undefined {
+    const constraint = fieldConstraints(field).enum;
+    if (Array.isArray(constraint)) return constraint;
+    const typed: TypeDescriptor | undefined = field.type === 'ARRAY' ? field.parameters?.items : field;
+    const values = typed?.type === 'ENUM' ? typed.parameters?.values : undefined;
+    return Array.isArray(values) ? values : undefined;
+}
+
+function scalarKind(descriptor: TypeDescriptor): FieldKind {
+    const type = descriptor.type;
+    if (INTEGER_RANGES.has(type)) return 'integer';
+    if (FLOAT_TYPES.has(type)) return 'number';
+    if (TEXT_TYPES.has(type)) return 'text';
+    if (type === 'TEXT') return 'longText';
+    if (type === 'boolean' || type === 'BOOLEAN') return 'boolean';
+    if (type === 'ENUM') return 'enum';
+    if (type === 'date' || type === 'DATE') return 'date';
+    if (type === 'TIME') return 'time';
+    if (DATETIME_TYPES.has(type)) return 'datetime';
+    if (JSON_TYPES.has(type)) return 'json';
+    return 'unsupported';
+}
+
+/** The kind of control for the field, from its type and enum constraint. */
+export function fieldKind(field: FieldLike): FieldKind {
+    if (field.type === 'ARRAY') {
+        if (enumValues(field) !== undefined) return 'multiEnum';
+        const items: TypeDescriptor | undefined = field.parameters?.items;
+        return items !== undefined && scalarKind(items) === 'text' ? 'tags' : 'json';
+    }
+    if (fieldConstraints(field).enum !== undefined && scalarKind(field) === 'text') return 'enum';
+    return scalarKind(field);
+}
+
+/** Label of the field from its name: "firstName" and "first_name" become "First name". */
+export function fieldLabel(field: FieldLike): string {
+    const words = field.name
+        .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+        .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
+        .split(/[\s_\-]+/)
+        .filter(word => word.length > 0);
+    return words
+        .map((word, index) => {
+            const kept = word.length > 1 && word === word.toUpperCase() ? word : word.toLowerCase();
+            return index === 0 ? kept[0].toUpperCase() + kept.slice(1) : kept;
+        })
+        .join(' ');
+}
+
+/** A value must be given: the field is declared not nullable or required. */
+export function isRequired(field: FieldLike): boolean {
+    const constraints = fieldConstraints(field);
+    return constraints.nullable === false || constraints.required === true;
+}
+
+/** Whether the field is shown in a form of the given mode; values generated by the database are not entered on create. */
+export function isVisible(field: FieldLike, mode: FormMode): boolean {
+    return !(mode === 'create' && fieldConstraints(field).identity !== undefined);
+}
+
+/** Whether the field can be changed in a form of the given mode; keys and generated values are fixed once the record exists. */
+export function isEditable(field: FieldLike, mode: FormMode): boolean {
+    if (mode === 'view' || fieldKind(field) === 'unsupported') return false;
+    const constraints = fieldConstraints(field);
+    if (constraints.identity === 'always') return false;
+    return !(mode === 'edit' && (constraints.primaryKey === true || constraints.identity !== undefined));
+}
+
+/** Fields of the model to show, in the order of `names` when given, without the excluded ones. */
+export function selectFields(model: ModelLike, names?: string[], exclude: string[] = []): FieldLike[] {
+    const byName = new Map(model.fields.map(field => [field.name, field]));
+    const selected = names === undefined
+        ? model.fields
+        : names.map(name => {
+            const field = byName.get(name);
+            if (field === undefined)
+                throw new Error(`Model ${model.metadata.name} has no field ${name}`);
+            return field;
+        });
+    return selected.filter(field => !exclude.includes(field.name));
+}
+
+/** Name of the field identifying a record: the primary key field, or the single field of the primaryKey constraint. */
+export function primaryKeyField(model: ModelLike): string | undefined {
+    const field = model.fields.find(field => fieldConstraints(field).primaryKey === true);
+    if (field !== undefined) return field.name;
+    const constraint = model.constraints?.find(constraint => constraint.type === 'primaryKey');
+    return constraint?.fields?.length === 1 ? constraint.fields[0] : undefined;
+}
+
+/** Initial values of a new record: literal defaults of the model, null for everything else. */
+export function emptyRecord(model: ModelLike): Record<string, unknown> {
+    return Object.fromEntries(model.fields.map(field => {
+        const defaultValue = fieldConstraints(field).default;
+        const value = defaultValue !== null && typeof defaultValue === 'object' && 'value' in defaultValue
+            ? defaultValue.value
+            : null;
+        return [field.name, value];
+    }));
+}
