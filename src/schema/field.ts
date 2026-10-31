@@ -1,4 +1,4 @@
-import type { Constraint, TableConstraint } from "model-algebra-common";
+import type { Constraint, Filterable, ModelFilter, Sortable, SortKey, TableConstraint } from "model-algebra-common";
 
 /**
  * A model field as accepted by the components: either a Field built by Model.fromJSON()
@@ -7,9 +7,13 @@ import type { Constraint, TableConstraint } from "model-algebra-common";
 export interface FieldLike {
     name: string;
     type: string;
+    /** Label of the control and column; from the name by default. */
+    label?: string;
     description?: string;
     parameters?: Record<string, any>;
     constraints?: Constraint[] | Record<string, any>;
+    sortable?: Sortable;
+    filterable?: Filterable;
 }
 
 /** A model as accepted by the components: a Model instance or its plain JSON form. */
@@ -17,6 +21,8 @@ export interface ModelLike {
     metadata: { name: string, description?: string };
     fields: FieldLike[];
     constraints?: TableConstraint[];
+    sortings?: Record<string, SortKey[]>;
+    filters?: Record<string, ModelFilter>;
 }
 
 /** The kind of control used to edit a field and of formatting used to show it. */
@@ -109,9 +115,14 @@ export function referencedModel(field: FieldLike): string | undefined {
     return typeof ref === 'string' ? ref : undefined;
 }
 
-/** Label of the field from its name: "firstName" and "first_name" become "First name". */
+/** Label of the field: its label, or its name as words ("firstName" becomes "First name"). */
 export function fieldLabel(field: FieldLike): string {
-    const words = field.name
+    return field.label ?? humanize(field.name);
+}
+
+/** A name as words: "firstName" and "first_name" become "First name". */
+export function humanize(name: string): string {
+    const words = name
         .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
         .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
         .split(/[\s_\-]+/)

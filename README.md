@@ -6,7 +6,7 @@ Vue 3 components that wrap Vuetify components and are driven by
 
 - **`ModelField`**: an input control for one field of a model, bound to a value with `v-model`
 - **`ModelForm`**: a form for a record of a model
-- **`ModelTable`**: a data table of records of a model
+- **`ModelTable`**: a data table of records of a model, sorted and filtered as the model declares
 
 Labels, input types, validation rules and value formatting all come from the field types and constraints of the model.
 
@@ -198,8 +198,40 @@ it to put the fields of a model into a form of your own.
 | `itemKey` | `string` | Row identity; the primary key of the model by default. |
 | `locale` | `string` | Locale for numbers and dates; the browser locale by default. |
 | `itemsLength` | `number` | Total number of records for server-side paging; switches to `VDataTableServer`. |
+| `functions` | `Record<string, Function>` | Functions sort and filter definitions name. |
+| `predicates` | `Record<string, Function>` | Predicates filter definitions name. |
+| `filterBar` | `boolean` | Show the filters and extra sort orders above the table (default `true`). |
+| `v-model:filters` | `Record<string, unknown>` | Values of the filters that are on, by filter name. |
+| `v-model:sort` | `{ key, order }[]` | Sort order: sort keys, or names of sorted columns. |
+| `v-model:page`, `v-model:items-per-page` | `number` | Paging. |
+
+Emits `update:query` with the query parameters of the API request (see below) when `itemsLength` is given.
 
 Columns get the field label as title. Numbers are right-aligned. JSON, nested record and array columns are not sortable.
+
+#### Sorting and filtering
+
+A model that declares `sortable` or `filterable` fields, `sortings` or `filters` is sorted and filtered as it declares:
+
+- Only columns of sortable fields are sortable; a column sorts by the first definition of its field, in the
+  directions it allows.
+- A filter bar above the table has a control for each filter: a field of the field's type (or of the argument's type)
+  for filters that take a value, a checkbox for filters that are only switched on. Its "Sort by" choice offers the
+  sort orders of the model, the other named definitions of fields, and sortable fields without columns.
+- Functions and predicates are looked up by name in the `functions` and `predicates` props:
+  `function(value, row)` and `predicate(value, row[, argument])` for fields, `function(row)` and
+  `predicate(row[, argument])` for the model. Comparisons with missing values are false, as in SQL.
+
+Without `itemsLength` the table filters, sorts and pages `items` itself. With it, `items` is the page the server
+returned, and the table emits `update:query` whenever the page, sort order or filters change, with parameters named
+as [openapi-bridge-typescript](https://github.com/model-algebra/openapi-bridge-typescript) describes them:
+
+```vue
+<ModelTable :model="personModel" :items="page.items" :items-length="page.total" @update:query="load" />
+<!-- load({ limit: 10, offset: 20, sort: '-age,lastName.caseless', 'age.gte': 18, adults: true }) -->
+```
+
+Models without declarations keep the plain `VDataTable` behaviour. `ModelTableFilters` is the filter bar on its own.
 
 Cells are formatted by type: numbers and dates by locale, `DECIMAL` with its scale, booleans as Yes/No, and JSON and
 nested records shortened. Override a cell with `#item.<name>="{ item, value, field, formatted }"`. All other `VDataTable` slots
@@ -218,6 +250,8 @@ The logic behind the components is exported for use in your own controls:
 - **`toInput`, `fromInput`**: conversion between record values and control values.
 - **`emptyRecord`, `primaryKeyField`, `selectFields`**: model-level helpers.
 - **`referencedModel`, `toResolver`, `useModels`, `ModelsKey`**: references between models.
+- **`filterRows`, `sortRows`, `listQuery`, `listSortOptions`, `listFilterOptions`, `sortLabel`, `filterLabel`**: sorting
+  and filtering of lists.
 
 ## Development
 

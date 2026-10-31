@@ -9,6 +9,7 @@ export type { FieldControlProps, ObjectControlProps } from './components/fields/
 export { default as ModelFields } from './components/ModelFields.vue';
 export { default as ModelForm } from './components/ModelForm.vue';
 export { default as ModelTable } from './components/ModelTable.vue';
+export { default as ModelTableFilters } from './components/ModelTableFilters.vue';
 export { useFieldInput } from './composables/useFieldInput';
 export { useModels, ModelsKey } from './composables/useModels';
 export * from './schema';
