@@ -53,3 +53,40 @@ export const eventModel = Model.fromJSON(eventJson);
 export const allTypesModel = Model.fromJSON(allTypesJson);
 
 export const field = (model: { fields: any[] }, name: string) => model.fields.find(field => field.name === name)!;
+
+/** A person with a nested address, a list of contacts and a self-reference. */
+export const addressJson = {
+    metadata: { name: "Address", version: "1.0.0" },
+    fields: [
+        { name: "city", type: "STRING", constraints: { nullable: false } },
+        { name: "street", type: "STRING" },
+        { name: "zip", type: "STRING", constraints: { regex: "^\\d{5}$" } },
+    ],
+};
+
+export const contactJson = {
+    metadata: { name: "Contact", version: "1.0.0" },
+    fields: [
+        { name: "id", type: "INT32", constraints: { primaryKey: true } },
+        { name: "kind", type: "ENUM", parameters: { values: ["EMAIL", "PHONE"] }, constraints: { nullable: false } },
+        { name: "value", type: "STRING", constraints: { nullable: false } },
+        { name: "since", type: "DATE" },
+        { name: "until", type: "DATE" },
+    ],
+    constraints: [
+        { name: "contact_period", type: "check", rule: { field: "until", op: ">=", otherField: "since" } },
+    ],
+};
+
+export const personJson = {
+    metadata: { name: "Person", version: "1.0.0" },
+    fields: [
+        { name: "name", type: "STRING", constraints: { nullable: false } },
+        { name: "home", type: "OBJECT", description: "Where the person lives", parameters: { ref: "Address" }, constraints: { nullable: false } },
+        { name: "work", type: "OBJECT", parameters: { ref: "Address" } },
+        { name: "contacts", type: "ARRAY", parameters: { items: { type: "OBJECT", parameters: { ref: "Contact" } } } },
+        { name: "manager", type: "OBJECT", parameters: { ref: "Person" } },
+    ],
+};
+
+export const personModels = [Model.fromJSON(addressJson), Model.fromJSON(contactJson), Model.fromJSON(personJson)];

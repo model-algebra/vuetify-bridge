@@ -35,7 +35,9 @@ export function formatValue(field: FieldLike, value: unknown, locale?: string): 
         case 'multiEnum':
         case 'tags':
             return Array.isArray(value) ? value.join(', ') : String(value);
-        case 'json': {
+        case 'json':
+        case 'object':
+        case 'objectList': {
             const text = JSON.stringify(value);
             return text.length > JSON_PREVIEW_LENGTH ? `${text.slice(0, JSON_PREVIEW_LENGTH - 1)}…` : text;
         }

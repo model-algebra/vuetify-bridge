@@ -1,11 +1,12 @@
 <script setup lang="ts">
 // Form editing a record of the model: a control per field, table-level checks, submit and cancel
-import { computed, ref, watch } from 'vue'
-import { VAlert, VBtn, VCol, VForm, VRow, VSpacer } from 'vuetify/components'
-import ModelField from './fields/ModelField.vue'
+import { computed, ref, useSlots, watch } from 'vue'
+import { VBtn, VForm, VSpacer } from 'vuetify/components'
+import ModelFields from './ModelFields.vue'
+import { useModels } from '../composables/useModels'
 import {
-    emptyRecord, fieldKind, isEditable, isVisible, recordErrors, selectFields,
-    type FieldLike, type FormMode, type ModelLike, type ValidationMessages,
+    emptyRecord,
+    type FieldLike, type FormMode, type ModelLike, type ModelsOption, type ValidationMessages,
 } from '../schema'
 
 const props = withDefaults(defineProps<{
@@ -16,6 +17,8 @@ const props = withDefaults(defineProps<{
     fields?: string[]
     exclude?: string[]
     messages?: Partial<ValidationMessages>
+    /** Models referenced by OBJECT fields, edited with nested sub-forms; without them such fields are edited as JSON. */
+    models?: ModelsOption
     submitText?: string
     cancelText?: string
     /** Don't show the Save and Cancel buttons; use the actions slot or the exposed validate() instead. */
@@ -29,7 +32,7 @@ const props = withDefaults(defineProps<{
 const record = defineModel<Record<string, unknown>>({ required: true })
 
 const emit = defineEmits<{
-    /** The record passed all checks of the model. */
+    /** The record, nested records included, passed all checks of the models. */
     submit: [record: Record<string, unknown>]
     cancel: []
 }>()
@@ -46,25 +49,17 @@ defineSlots<{
     actions?: (props: { submit: () => Promise<void>, cancel: () => void }) => any
 }>()
 
+useModels(() => props.models)
+
+const slots = useSlots()
+const fieldSlots = computed(() => Object.keys(slots).filter(name => name.startsWith('field.')) as `field.${string}`[])
+
 const form = ref<InstanceType<typeof VForm>>()
 
-const shownFields = computed(() =>
-    selectFields(props.model, props.fields, props.exclude).filter(field => isVisible(field, props.mode)))
-
-const errors = computed(() => recordErrors(props.model, record.value, props.messages))
-
-// Short values share a row on wider screens, text and structured values take the whole row
-const WIDE_KINDS = new Set(['longText', 'json', 'tags', 'multiEnum'])
-const columns = (field: FieldLike) => WIDE_KINDS.has(fieldKind(field)) ? 12 : 6
-
-function update(name: string, value: unknown) {
-    record.value = { ...record.value, [name]: value }
-}
-
-/** Validates every field and the table-level checks; true when the record can be saved. */
+/** Validates every field, nested ones included, and the table-level checks; true when the record can be saved. */
 async function validate(): Promise<boolean> {
     const result = await form.value?.validate()
-    return (result?.valid ?? false) && errors.value.length === 0
+    return result?.valid ?? false
 }
 
 async function submit() {
@@ -88,28 +83,11 @@ defineExpose({
 
 <template>
     <VForm ref="form" @submit.prevent="submit">
-        <VRow>
-            <VCol v-for="field in shownFields" :key="field.name" cols="12" :md="columns(field)">
-                <slot
-                    :name="`field.${field.name}`"
-                    :field="field"
-                    :value="record[field.name]"
-                    :update="(value: unknown) => update(field.name, value)"
-                    :readonly="!isEditable(field, mode)"
-                >
-                    <ModelField
-                        :model-value="record[field.name]"
-                        :field="field"
-                        :readonly="!isEditable(field, mode)"
-                        :messages="messages"
-                        @update:model-value="update(field.name, $event)"
-                    />
-                </slot>
-            </VCol>
-        </VRow>
-        <VAlert v-for="error in errors" :key="error" type="error" variant="tonal" density="compact" class="mb-2">
-            {{ error }}
-        </VAlert>
+        <ModelFields v-model="record" :model="model" :mode="mode" :fields="fields" :exclude="exclude" :messages="messages">
+            <template v-for="name in fieldSlots" :key="name" #[name]="slotProps">
+                <slot :name="name" v-bind="slotProps" />
+            </template>
+        </ModelFields>
         <slot v-if="mode !== 'view'" name="actions" :submit="submit" :cancel="cancel">
             <div v-if="!hideActions" class="d-flex ga-2">
                 <VSpacer />

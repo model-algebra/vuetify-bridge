@@ -13,7 +13,7 @@ const { input, kind, label, hint, rules } = useFieldInput(() => props.field, val
 <template>
     <VTextarea
         v-model="input"
-        :class="{ 'model-json-field': kind === 'json' }"
+        :class="{ 'model-json-field': kind !== 'longText' }"
         :label="label"
         :hint="hint"
         :rules="rules"

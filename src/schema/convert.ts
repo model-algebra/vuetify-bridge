@@ -28,7 +28,7 @@ export function isEmpty(value: unknown): boolean {
     return value === null || value === undefined || value === '' || (Array.isArray(value) && value.length === 0);
 }
 
-/** Record value of the field to the value held by its Vuetify control. */
+/** Record value of the field to the value held by its Vuetify control; OBJECT values become JSON text. */
 export function toInput(field: FieldLike, value: unknown): unknown {
     const kind = fieldKind(field);
     switch (kind) {
@@ -55,13 +55,18 @@ export function toInput(field: FieldLike, value: unknown): unknown {
                 : String(value).replace(' ', 'T').slice(0, 19);
         }
         case 'json':
+        case 'object':
+        case 'objectList':
             return JSON.stringify(value, null, 2);
         default:
             return String(value);
     }
 }
 
-/** Value held by the Vuetify control of the field to the record value; empty input is null. */
+/**
+ * Value held by the Vuetify control of the field to the record value; empty input is null.
+ * OBJECT values are converted from JSON text here; sub-forms edit them without conversion.
+ */
 export function fromInput(field: FieldLike, input: unknown): Parsed {
     const kind = fieldKind(field);
     if (kind === 'multiEnum' || kind === 'tags')
@@ -79,6 +84,8 @@ export function fromInput(field: FieldLike, input: unknown): Parsed {
             return Number.isNaN(date.getTime()) ? { ok: false, error: 'date' } : { ok: true, value: date.toISOString() };
         }
         case 'json':
+        case 'object':
+        case 'objectList':
             try {
                 return { ok: true, value: JSON.parse(String(input)) };
             } catch {

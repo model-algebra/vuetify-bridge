@@ -21,7 +21,7 @@ const props = defineProps<{
 const slots = useSlots()
 
 const NUMERIC_KINDS = new Set(['integer', 'number'])
-const UNSORTABLE_KINDS = new Set(['json', 'tags', 'multiEnum', 'unsupported'])
+const UNSORTABLE_KINDS = new Set(['json', 'object', 'objectList', 'tags', 'multiEnum', 'unsupported'])
 
 const columns = computed(() => selectFields(props.model, props.fields, props.exclude))
 

@@ -1,6 +1,6 @@
 import { allTypesJson, allTypesModel, eventJson, eventModel, field } from "../test/models";
 import {
-    emptyRecord, enumValues, fieldConstraints, fieldKind, fieldLabel, isEditable, isRequired, isVisible,
+    emptyRecord, enumValues, fieldConstraints, referencedModel, fieldKind, fieldLabel, isEditable, isRequired, isVisible,
     primaryKeyField, selectFields,
 } from "./field";
 
@@ -19,8 +19,8 @@ describe('fieldKind', () => {
         ['decimalField', 'number'], ['booleanField', 'boolean'], ['stringField', 'text'], ['textField', 'longText'],
         ['uuidField', 'text'], ['bytesField', 'unsupported'], ['dateField', 'date'], ['timeField', 'time'],
         ['datetimeField', 'datetime'], ['timestampField', 'datetime'], ['timestampTzField', 'datetime'],
-        ['durationField', 'text'], ['objectField', 'json'], ['enumField', 'enum'], ['unionField', 'json'],
-        ['jsonField', 'json'], ['tagsField', 'tags'], ['rolesField', 'multiEnum'], ['pointsField', 'json'],
+        ['durationField', 'text'], ['objectField', 'object'], ['enumField', 'enum'], ['unionField', 'json'],
+        ['jsonField', 'json'], ['tagsField', 'tags'], ['rolesField', 'multiEnum'], ['pointsField', 'objectList'],
     ])('%s is %s', (name, kind) => {
         expect(fieldKind(field(allTypesJson, name))).toBe(kind);
     });
@@ -41,6 +41,14 @@ describe('enumValues', () => {
         expect(enumValues(field(eventModel, 'status'))).toEqual(['DRAFT', 'PUBLISHED']);
         expect(enumValues(field(allTypesJson, 'rolesField'))).toEqual(['ADMIN', 'USER']);
         expect(enumValues(field(allTypesJson, 'stringField'))).toBeUndefined();
+    });
+});
+
+describe('referencedModel', () => {
+    test('is the ref of an OBJECT field or of the items of an ARRAY', () => {
+        expect(referencedModel(field(allTypesJson, 'objectField'))).toBe('User');
+        expect(referencedModel(field(allTypesJson, 'pointsField'))).toBe('Point');
+        expect(referencedModel(field(allTypesJson, 'tagsField'))).toBeUndefined();
     });
 });
 

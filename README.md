@@ -60,6 +60,8 @@ Attributes not listed below are passed on to the wrapped Vuetify component (`var
 | `v-model` | `unknown` | The value of the field in the record. |
 | `readonly` | `boolean` | |
 | `messages` | `Partial<ValidationMessages>` | Overrides of validation messages. |
+| `models` | `ModelsOption` | Models referenced by `OBJECT` fields; inherited when not given. |
+| `mode` | `FormMode` | Mode passed on to sub-forms. |
 
 The control is chosen by field type:
 
@@ -74,10 +76,13 @@ The control is chosen by field type:
 | `ARRAY` of `ENUM` | multiple select |
 | `ARRAY` of text | combobox of free-form chips |
 | `DATE`, `TIME`, `DATETIME`, `TIMESTAMP`, `TIMESTAMP_TZ` | native `date`, `time` and `datetime-local` inputs |
-| `JSON`, `OBJECT`, `UNION`, other `ARRAY`s | JSON textarea (nested forms are planned) |
+| `OBJECT` | nested sub-form, see [Nested records](#nested-records) |
+| `ARRAY` of `OBJECT` | list of sub-forms |
+| `JSON`, `UNION`, other `ARRAY`s | JSON textarea |
 | `BYTES` | read-only |
 
-The controls for each kind are also exported: `ModelTextField`, `ModelTextareaField`, `ModelBooleanField`, `ModelSelectField`.
+The controls for each kind are also exported: `ModelTextField`, `ModelTextareaField`, `ModelBooleanField`,
+`ModelSelectField`, `ModelObjectField`, `ModelObjectListField`.
 
 #### Values
 
@@ -121,6 +126,7 @@ Messages are in English. Override any of them with the `messages` prop:
 | `fields` | `string[]` | all | Fields to show, in this order. |
 | `exclude` | `string[]` | | Fields not to show. |
 | `messages` | `Partial<ValidationMessages>` | | |
+| `models` | `ModelsOption` | | Models referenced by `OBJECT` fields. |
 | `submitText`, `cancelText` | `string` | `Save`, `Cancel` | |
 | `hideActions` | `boolean` | `false` | |
 
@@ -143,6 +149,43 @@ Slots:
 
 Exposed: `validate(): Promise<boolean>`, `resetValidation()`.
 
+### Nested records
+
+An `OBJECT` field references another model by name in `parameters.ref`. Give the form the models it may reference,
+and such fields become sub-forms; without them, they are edited as JSON.
+
+```vue
+<ModelForm :model="personModel" :models="[addressModel, contactModel, personModel]" v-model="person" />
+```
+
+`models` can be:
+
+- a list, looked up by `metadata.name`
+- a map by name
+- a function `(name) => model | undefined`
+
+Nested sub-forms inherit the models. To make them available everywhere, provide them once:
+
+```ts
+import { ModelsKey } from 'vuetify-bridge'
+app.provide(ModelsKey, [addressModel, contactModel, personModel])
+```
+
+How sub-forms behave:
+
+- **`OBJECT` field:** shows a card with the fields of the referenced model. An empty optional field has an **Add**
+  button and can be removed again. An empty required field fails validation.
+- **`ARRAY` of `OBJECT`:** shows a list of cards; items can be added, removed and moved up or down.
+- **Validation:** nested fields and the `check` constraints of nested models are validated with the form, so
+  `submit` is emitted only when every level is valid.
+- **Modes:** sub-forms follow the mode of the form. Records added in a sub-form are new, so they are edited in create
+  mode: identity fields are hidden and defaults are filled in.
+- **Self-references:** a model can reference itself, e.g. `Person.manager`; a sub-form appears only when a value is
+  added.
+
+`ModelFields` is the body of a form without the `VForm` and the buttons: the fields of a record and its checks. Use
+it to put the fields of a model into a form of your own.
+
 ### ModelTable
 
 | Prop | Type | |
@@ -154,10 +197,10 @@ Exposed: `validate(): Promise<boolean>`, `resetValidation()`.
 | `locale` | `string` | Locale for numbers and dates; the browser locale by default. |
 | `itemsLength` | `number` | Total number of records for server-side paging; switches to `VDataTableServer`. |
 
-Columns get the field label as title. Numbers are right-aligned. JSON and array columns are not sortable.
+Columns get the field label as title. Numbers are right-aligned. JSON, nested record and array columns are not sortable.
 
-Cells are formatted by type: numbers and dates by locale, `DECIMAL` with its scale, booleans as Yes/No, and JSON
-shortened. Override a cell with `#item.<name>="{ item, value, field, formatted }"`. All other `VDataTable` slots
+Cells are formatted by type: numbers and dates by locale, `DECIMAL` with its scale, booleans as Yes/No, and JSON and
+nested records shortened. Override a cell with `#item.<name>="{ item, value, field, formatted }"`. All other `VDataTable` slots
 (`no-data`, `top`, headers…) are passed through.
 
 ### Helpers
@@ -172,6 +215,7 @@ The logic behind the components is exported for use in your own controls:
 - **`formatValue`**: display text of a value.
 - **`toInput`, `fromInput`**: conversion between record values and control values.
 - **`emptyRecord`, `primaryKeyField`, `selectFields`**: model-level helpers.
+- **`referencedModel`, `toResolver`, `useModels`, `ModelsKey`**: references between models.
 
 ## Development
 

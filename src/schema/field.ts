@@ -33,6 +33,8 @@ export type FieldKind =
     | 'time'
     | 'datetime'
     | 'json'
+    | 'object'
+    | 'objectList'
     | 'unsupported';
 
 /** How a record is edited: create shows no generated fields, view makes every field read-only. */
@@ -51,7 +53,7 @@ export const INTEGER_RANGES = new Map<string, [number, number] | undefined>([
 const FLOAT_TYPES = new Set(['number', 'FLOAT32', 'FLOAT64', 'DECIMAL']);
 const TEXT_TYPES = new Set(['string', 'STRING', 'UUID', 'DURATION']);
 const DATETIME_TYPES = new Set(['DATETIME', 'TIMESTAMP', 'TIMESTAMP_TZ']);
-const JSON_TYPES = new Set(['JSON', 'OBJECT', 'UNION', 'object', 'array']);
+const JSON_TYPES = new Set(['JSON', 'UNION', 'object', 'array']);
 
 /** Constraints of the field as a map, whichever form the field was given in. */
 export function fieldConstraints(field: FieldLike): Record<string, any> {
@@ -82,6 +84,7 @@ function scalarKind(descriptor: TypeDescriptor): FieldKind {
     if (type === 'date' || type === 'DATE') return 'date';
     if (type === 'TIME') return 'time';
     if (DATETIME_TYPES.has(type)) return 'datetime';
+    if (type === 'OBJECT') return 'object';
     if (JSON_TYPES.has(type)) return 'json';
     return 'unsupported';
 }
@@ -91,10 +94,19 @@ export function fieldKind(field: FieldLike): FieldKind {
     if (field.type === 'ARRAY') {
         if (enumValues(field) !== undefined) return 'multiEnum';
         const items: TypeDescriptor | undefined = field.parameters?.items;
-        return items !== undefined && scalarKind(items) === 'text' ? 'tags' : 'json';
+        const itemKind = items !== undefined ? scalarKind(items) : 'json';
+        if (itemKind === 'text') return 'tags';
+        return itemKind === 'object' ? 'objectList' : 'json';
     }
     if (fieldConstraints(field).enum !== undefined && scalarKind(field) === 'text') return 'enum';
     return scalarKind(field);
+}
+
+/** Name of the model referenced by an OBJECT field or by the items of an ARRAY of OBJECT. */
+export function referencedModel(field: FieldLike): string | undefined {
+    const typed: TypeDescriptor | undefined = field.type === 'ARRAY' ? field.parameters?.items : field;
+    const ref = typed?.type === 'OBJECT' ? typed.parameters?.ref : undefined;
+    return typeof ref === 'string' ? ref : undefined;
 }
 
 /** Label of the field from its name: "firstName" and "first_name" become "First name". */

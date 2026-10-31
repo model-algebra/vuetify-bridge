@@ -3,8 +3,12 @@ export { default as ModelTextField } from './components/fields/ModelTextField.vu
 export { default as ModelTextareaField } from './components/fields/ModelTextareaField.vue';
 export { default as ModelBooleanField } from './components/fields/ModelBooleanField.vue';
 export { default as ModelSelectField } from './components/fields/ModelSelectField.vue';
-export type { FieldControlProps } from './components/fields/types';
+export { default as ModelObjectField } from './components/fields/ModelObjectField.vue';
+export { default as ModelObjectListField } from './components/fields/ModelObjectListField.vue';
+export type { FieldControlProps, ObjectControlProps } from './components/fields/types';
+export { default as ModelFields } from './components/ModelFields.vue';
 export { default as ModelForm } from './components/ModelForm.vue';
 export { default as ModelTable } from './components/ModelTable.vue';
 export { useFieldInput } from './composables/useFieldInput';
+export { useModels, ModelsKey } from './composables/useModels';
 export * from './schema';
