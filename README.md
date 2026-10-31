@@ -13,7 +13,15 @@ Labels, input types, validation rules and value formatting all come from the fie
 ## Installation
 
 ```sh
-pnpm add vuetify-bridge model-algebra-common
+pnpm add github:model-algebra/vuetify-bridge github:model-algebra/common-typescript
+```
+
+Both packages build themselves when installed. With pnpm, allow that in `pnpm-workspace.yaml`:
+
+```yaml
+onlyBuiltDependencies:
+  - model-algebra-common
+  - vuetify-bridge
 ```
 
 `vue` (3.4+) and `vuetify` (3.5+) are peer dependencies. Import the library styles once:
@@ -226,4 +234,5 @@ pnpm type-check
 pnpm build         # dist/: ES and UMD bundles, type declarations, style.css
 ```
 
-`example-site/` in the parent project shows the form and the table on an example model.
+[example-site](https://github.com/model-algebra/example-site) shows every component on example models; with a
+checkout of vuetify-bridge next to it, `pnpm dev:local` runs it on the sources of the checkout.
