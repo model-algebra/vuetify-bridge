@@ -9,12 +9,32 @@ type __VLS_Props = {
     messages?: Partial<ValidationMessages>;
     /** Models referenced by OBJECT fields, edited with nested sub-forms; without them such fields are edited as JSON. */
     models?: ModelsOption;
+    /** Text of the Save button; from the form model, or Save, by default. */
     submitText?: string;
+    /** Text of the Cancel button; from the form model, or Cancel, by default. */
     cancelText?: string;
     /** Don't show the Save and Cancel buttons; use the actions slot or the exposed validate() instead. */
     hideActions?: boolean;
 };
+/** Props of the actions slot and of the actions component of the form model. */
+interface ActionProps {
+    /** Validates the record and emits submit when it passes. */
+    submit: () => Promise<void>;
+    cancel: () => void;
+    validate: () => Promise<boolean>;
+    mode: FormMode;
+    record: Record<string, unknown>;
+    submitText: string;
+    cancelText: string;
+}
 type __VLS_Slots = {
+    /** A layout of your own instead of the grid: place fields with <ModelFormField name="…" />. */
+    default?: (props: {
+        fields: FieldLike[];
+        record: Record<string, unknown>;
+        update: (name: string, value: unknown) => void;
+        mode: FormMode;
+    }) => any;
     /** Replaces the control of one field, e.g. #field.title */
     [name: `field.${string}`]: (props: {
         field: FieldLike;
@@ -23,10 +43,7 @@ type __VLS_Slots = {
         readonly: boolean;
     }) => any;
     /** Replaces the Save and Cancel buttons. */
-    actions?: (props: {
-        submit: () => Promise<void>;
-        cancel: () => void;
-    }) => any;
+    actions?: (props: ActionProps) => any;
 };
 /** Validates every field, nested ones included, and the table-level checks; true when the record can be saved. */
 declare function validate(): Promise<boolean>;
@@ -47,8 +64,6 @@ declare const __VLS_base: import("vue").DefineComponent<__VLS_PublicProps, {
     onCancel?: (() => any) | undefined;
 }>, {
     mode: FormMode;
-    submitText: string;
-    cancelText: string;
 }, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
 declare const __VLS_export: __VLS_WithSlots<typeof __VLS_base, __VLS_Slots>;
 declare const _default: typeof __VLS_export;

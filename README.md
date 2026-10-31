@@ -125,11 +125,11 @@ Messages are in English. Override any of them with the `messages` prop:
 | `model` | `Model` | | |
 | `v-model` | `Record<string, unknown>` | | The record; replaced with a new object on every change. |
 | `mode` | `'create' \| 'edit' \| 'view'` | `'edit'` | See below. |
-| `fields` | `string[]` | all | Fields to show, in this order. |
+| `fields` | `string[]` | all | Fields to show, in this order; the `order` of the form model by default. |
 | `exclude` | `string[]` | | Fields not to show. |
 | `messages` | `Partial<ValidationMessages>` | | |
 | `models` | `ModelsOption` | | Models referenced by `OBJECT` fields. |
-| `submitText`, `cancelText` | `string` | `Save`, `Cancel` | |
+| `submitText`, `cancelText` | `string` | `Save`, `Cancel` | Override the texts of the form model. |
 | `hideActions` | `boolean` | `false` | |
 
 Modes:
@@ -146,10 +146,87 @@ Events:
 
 Slots:
 
+- **default `{ fields, record, update, mode }`**: a layout of your own instead of the grid; see below.
 - **`#field.<name>="{ field, value, update, readonly }"`**: replaces the control of one field.
-- **`#actions="{ submit, cancel }"`**: replaces the buttons.
+- **`#actions="{ submit, cancel, validate, mode, record, submitText, cancelText }"`**: replaces the action bar.
+  `submit` validates the record and emits `submit` when it passes.
 
 Exposed: `validate(): Promise<boolean>`, `resetValidation()`.
+
+#### Form models
+
+How a model is shown in a form lives in a form model, apart from the model. `withForm(model, formModel)` combines
+them into the model given to the form; the model itself is not changed, so it stays the same for tables, APIs and
+databases. Most of what would take templates is then said in the form model:
+
+```ts
+import { withForm, type FormModel } from 'vuetify-bridge'
+
+const eventForm: FormModel = {
+    order: ['title', 'status', 'seats', 'price', 'startDate', 'endDate'],
+    fields: {
+        title: { label: 'Name', cols: 12 },
+        seats: { control: 'VSlider', props: { min: 1, max: 500, step: 1, thumbLabel: true } },
+        price: { props: { prefix: '$' } },
+        status: { control: StatusChips },
+        notes: { hidden: true },
+    },
+    submitText: 'Publish',
+}
+```
+
+```vue
+<ModelForm v-model="event" :model="withForm(eventModel, eventForm)" />
+```
+
+Options of a field:
+
+| Option | |
+|---|---|
+| `label`, `hint` | Instead of the label and description of the field. |
+| `hidden` | Not shown. |
+| `cols` | Width on the 12-column grid of wider screens; 6, or 12 for long text and structured values, by default. |
+| `props` | Attributes of the control, e.g. `{ prefix: '$', variant: 'outlined' }`. |
+| `control` | Replaces the control: a component, or the name of a globally registered one. |
+| `row` | Replaces the whole place of the field; gets the control as its default slot. |
+
+A `control` that declares a `field` prop is a field control: it gets `field`, `v-model`, `readonly`, `messages`
+(and `mode`, when it declares it), as the controls of the library do, and can use `useFieldInput()`. Any other
+component, such as `VSlider`, `VRating` or `VSwitch`, is bound as a Vuetify input: `v-model` converted to and from the
+field's type, `label`, `hint`, `rules` from the constraints, and `readonly`.
+
+A `row` gets `{ field, value, update, readonly, mode, record }`, and the control in its default slot: use it to add
+a caption, buttons or help around the control, or leave the slot out and edit the value yourself.
+
+Options of the form: `order` (fields to show, in this order), `submitText`, `cancelText`, and `actions`, a component
+that replaces the action bar and gets the props of the `#actions` slot.
+
+Unknown field names in a form model are an error, so a renamed field does not silently lose its options.
+
+#### Layouts of your own
+
+The default slot replaces the grid. Place fields with `ModelFormField`, which shows a field with its form options,
+validation and mode; the rest (table-level checks, buttons, submit) stays with the form:
+
+```vue
+<ModelForm v-model="event" :model="withForm(eventModel, eventForm)">
+    <v-row>
+        <v-col cols="8"><ModelFormField name="title" /></v-col>
+        <v-col cols="4"><ModelFormField name="status" /></v-col>
+    </v-row>
+    <v-expansion-panels>
+        <v-expansion-panel title="Dates">
+            <v-expansion-panel-text>
+                <ModelFormField name="startDate" />
+                <ModelFormField name="endDate" variant="outlined" />
+            </v-expansion-panel-text>
+        </v-expansion-panel>
+    </v-expansion-panels>
+</ModelForm>
+```
+
+Attributes of `ModelFormField` go to the control, after the `props` of the form model. `ModelFormField` works inside
+`ModelForm` and `ModelFields`, sub-forms included.
 
 ### Nested records
 
@@ -249,6 +326,7 @@ The logic behind the components is exported for use in your own controls:
 - **`formatValue`**: display text of a value.
 - **`toInput`, `fromInput`**: conversion between record values and control values.
 - **`emptyRecord`, `primaryKeyField`, `selectFields`**: model-level helpers.
+- **`withForm`, `formOptions`, `formOf`**: form models; **`ModelInputControl`** binds any Vuetify input to a field.
 - **`referencedModel`, `toResolver`, `useModels`, `ModelsKey`**: references between models.
 - **`filterRows`, `sortRows`, `listQuery`, `listSortOptions`, `listFilterOptions`, `sortLabel`, `filterLabel`**: sorting
   and filtering of lists.

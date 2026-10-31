@@ -8,8 +8,12 @@ export { default as ModelObjectListField } from './components/fields/ModelObject
 export type { FieldControlProps, ObjectControlProps } from './components/fields/types';
 export { default as ModelFields } from './components/ModelFields.vue';
 export { default as ModelForm } from './components/ModelForm.vue';
+export { default as ModelFormField } from './components/ModelFormField';
+export { default as ModelInputControl } from './components/fields/ModelInputControl.vue';
 export { default as ModelTable } from './components/ModelTable.vue';
 export { default as ModelTableFilters } from './components/ModelTableFilters.vue';
 export { useFieldInput } from './composables/useFieldInput';
 export { useModels, ModelsKey } from './composables/useModels';
+export { useFormFields } from './composables/useFormFields';
+export type { FormFields } from './composables/useFormFields';
 export * from './schema';

@@ -17,3 +17,5 @@ export {
     filterRows, sortRows, sortOptionOf, sortParameter, listQuery,
 } from "./list";
 export type { SortItem, ListFunctions } from "./list";
+export { withForm, formOptions, formOf } from "./form";
+export type { ComponentLike, FieldFormOptions, FormModel, FormFieldLike, FormModelLike, FormRowProps } from "./form";

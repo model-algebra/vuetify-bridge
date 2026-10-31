@@ -2,7 +2,7 @@ import { type FieldLike, type FormMode, type ModelLike, type ModelsOption, type 
 type __VLS_Props = {
     model: ModelLike;
     mode?: FormMode;
-    /** Names of the fields to show, in this order; all fields of the model by default. */
+    /** Names of the fields to show, in this order; the order of the form model, or all fields of the model, by default. */
     fields?: string[];
     exclude?: string[];
     messages?: Partial<ValidationMessages>;
@@ -10,6 +10,13 @@ type __VLS_Props = {
     models?: ModelsOption;
 };
 type __VLS_Slots = {
+    /** A layout of your own instead of the grid: place fields with <ModelFormField name="…" />. */
+    default?: (props: {
+        fields: FieldLike[];
+        record: Record<string, unknown>;
+        update: (name: string, value: unknown) => void;
+        mode: FormMode;
+    }) => any;
     /** Replaces the control of one field, e.g. #field.title */
     [name: `field.${string}`]: (props: {
         field: FieldLike;
