@@ -10,7 +10,7 @@ importers:
     dependencies:
       model-algebra-common:
         specifier: github:model-algebra/common-typescript
-        version: https://codeload.github.com/model-algebra/common-typescript/tar.gz/e8a1d34a8e9db46094a92fadf11812604e524c19
+        version: https://codeload.github.com/model-algebra/common-typescript/tar.gz/4ec1c61fb783e349f55cb31796b34f8f316b7561
     devDependencies:
       '@testing-library/jest-dom':
         specifier: ^6.9.1
@@ -1084,8 +1084,8 @@ packages:
     resolution: {integrity: sha512-qOOzS1cBTWYF4BH8fVePDBOO9iptMnGUEZwNc/cMWnTV2nVLZ7VoNWEPHkYczZA0pdoA7dl6e7FL659nX9S2aw==}
     engines: {node: '>=16 || 14 >=14.17'}
 
-  model-algebra-common@https://codeload.github.com/model-algebra/common-typescript/tar.gz/e8a1d34a8e9db46094a92fadf11812604e524c19:
-    resolution: {tarball: https://codeload.github.com/model-algebra/common-typescript/tar.gz/e8a1d34a8e9db46094a92fadf11812604e524c19}
+  model-algebra-common@https://codeload.github.com/model-algebra/common-typescript/tar.gz/4ec1c61fb783e349f55cb31796b34f8f316b7561:
+    resolution: {tarball: https://codeload.github.com/model-algebra/common-typescript/tar.gz/4ec1c61fb783e349f55cb31796b34f8f316b7561}
     version: 0.1.0
 
   ms@2.1.3:
@@ -2519,7 +2519,7 @@ snapshots:
 
   minipass@7.1.2: {}
 
-  model-algebra-common@https://codeload.github.com/model-algebra/common-typescript/tar.gz/e8a1d34a8e9db46094a92fadf11812604e524c19: {}
+  model-algebra-common@https://codeload.github.com/model-algebra/common-typescript/tar.gz/4ec1c61fb783e349f55cb31796b34f8f316b7561: {}
 
   ms@2.1.3: {}
 
