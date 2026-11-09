@@ -32,7 +32,7 @@
     "clean": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
     "dev": "vite",
     "build": "pnpm run clean && vue-tsc --noEmit && vite build && vue-tsc -p tsconfig.build.json",
-    "lint": "eslint --ext .ts,.vue src",
+    "lint": "eslint .",
     "test": "vitest",
     "test:watch": "vitest --watch",
     "type-check": "vue-tsc --noEmit"
@@ -45,6 +45,7 @@
     "vuetify": "^3.5.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/vue": "^8.1.0",
     "@types/jest": "^30.0.0",
@@ -52,13 +53,18 @@
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.8.1",
     "baseline-browser-mapping": "^2.9.11",
+    "eslint": "^10.14.0",
+    "eslint-plugin-vue": "^10.12.0",
+    "globals": "^17.14.0",
     "jsdom": "^29.1.1",
     "model-algebra-typescript": "github:model-algebra/model-algebra-typescript",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.72.1",
     "vite": "^7.3.0",
     "vite-plugin-vuetify": "^2.1.2",
     "vitest": "^4.0.16",
     "vue": "^3.5.26",
+    "vue-eslint-parser": "^10.4.2",
     "vue-tsc": "^3.2.1",
     "vuetify": "^3.11.6"
   },

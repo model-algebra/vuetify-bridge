@@ -355,8 +355,17 @@ The logic behind the components is exported for use in your own controls:
 pnpm install
 pnpm test          # vitest
 pnpm type-check
+pnpm lint          # eslint: the rules that catch errors, none that prescribe the format
 pnpm build         # dist/: ES and UMD bundles, type declarations, style.css
 ```
+
+The linting is set up in `eslint.config.js`. It uses the flat config of ESLint 10 with `typescript-eslint` and
+`eslint-plugin-vue`. Two rules are left out on purpose:
+
+- `vue/require-default-prop`: a prop that is not given is not a prop with the value `undefined`, and the components
+  tell the difference (a field list that is not given means all the fields of the model).
+- `@typescript-eslint/no-explicit-any`: the model of a record is JSON of any shape, so the types of the models say
+  `any` on purpose.
 
 `dist/` is committed, because other projects install the package from GitHub without building it. Enable the
 pre-commit hook once per clone; it rebuilds `dist/` and adds it to every commit that changes the sources:

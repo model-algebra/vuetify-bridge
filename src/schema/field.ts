@@ -130,7 +130,7 @@ export function humanize(name: string): string {
     const words = name
         .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
         .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
-        .split(/[\s_\-]+/)
+        .split(/[\s_-]+/)
         .filter(word => word.length > 0);
     return words
         .map((word, index) => {

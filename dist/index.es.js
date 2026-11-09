@@ -37,7 +37,7 @@ function D(e) {
   return e.label ?? se(e.name);
 }
 function se(e) {
-  return e.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2").split(/[\s_\-]+/).filter((n) => n.length > 0).map((n, l) => {
+  return e.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2").split(/[\s_-]+/).filter((n) => n.length > 0).map((n, l) => {
     const o = n.length > 1 && n === n.toUpperCase() ? n : n.toLowerCase();
     return l === 0 ? o[0].toUpperCase() + o.slice(1) : o;
   }).join(" ");

@@ -1,9 +1,9 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, type PropType } from 'vue'
 import { VCheckbox, VSlider } from 'vuetify/components'
 import { eventJson, eventModel } from '../test/models'
 import { union } from 'model-algebra-typescript'
-import { FormComponentsKey, formField, formOf, formOptions, type FieldControlProps, type FieldFormOptions, type FormRowProps, type ModelFormOptions } from '..'
+import { FormComponentsKey, formField, formOf, formOptions, type FieldControlProps, type FieldFormOptions, type FieldLike, type FormRowProps, type ModelFormOptions } from '..'
 import ModelForm from './ModelForm.vue'
 import ModelFormField from './ModelFormField'
 
@@ -22,6 +22,17 @@ function renderForm(form: ReturnType<typeof formModel>, props: Record<string, un
 
 const lastRecord = (emitted: Record<string, unknown[][]>) => emitted['update:modelValue']?.slice(-1)[0]?.[0] as Record<string, unknown>
 const labels = () => Array.from(document.querySelectorAll('label.v-label:not(.v-field-label--floating)')).map(l => l.textContent?.trim())
+
+/** Props of the actions component of the form model. */
+interface ActionProps {
+    submit: () => Promise<void>
+    cancel: () => void
+    validate: () => Promise<boolean>
+    mode: string
+    record: Record<string, unknown>
+    submitText: string
+    cancelText: string
+}
 
 describe('form models', () => {
     test('are united with the model, which stays as it is', () => {
@@ -83,7 +94,7 @@ describe('ModelForm with a form model', () => {
     })
 
     test('components given to the form win over those of the app', () => {
-        const Other = defineComponent({ props: ['field'], setup: () => () => h('b', 'other') })
+        const Other = defineComponent({ props: { field: { type: Object as PropType<FieldLike>, required: true } }, setup: () => () => h('b', 'other') })
         renderForm(formModel({ title: { control: 'Title' } }, { order: ['title'] }), { components: { Title: Other } },
             {}, { provide: { [FormComponentsKey as symbol]: { Title: VCheckbox } } })
         expect(screen.getByText('other')).toBeInTheDocument()
@@ -104,7 +115,14 @@ describe('ModelForm with a form model', () => {
 
     test('replaces the place of a field with a row that gets the control', () => {
         const Row = defineComponent({
-            props: ['field', 'value', 'update', 'readonly', 'mode', 'record'],
+            props: {
+                field: { type: Object as PropType<FieldLike>, required: true },
+                value: { type: null },
+                update: { type: Function as PropType<FormRowProps['update']>, required: true },
+                readonly: { type: Boolean, required: true },
+                mode: { type: String, required: true },
+                record: { type: Object as PropType<FormRowProps['record']>, required: true },
+            },
             setup: (props: FormRowProps, { slots }) => () =>
                 h('section', { 'data-testid': 'row' }, [h('h3', `${props.field.name} of ${props.record.title} in ${props.mode}`), slots.default?.()]),
         })
@@ -115,8 +133,16 @@ describe('ModelForm with a form model', () => {
 
     test('takes button texts and an action bar from the form model', async () => {
         const Actions = defineComponent({
-            props: ['submit', 'cancel', 'validate', 'mode', 'record', 'submitText', 'cancelText'],
-            setup: (props: any) => () => h('button', { type: 'button', onClick: props.submit }, `${props.submitText} ${props.record.title}`),
+            props: {
+                submit: { type: Function as PropType<ActionProps['submit']>, required: true },
+                cancel: { type: Function as PropType<ActionProps['cancel']>, required: true },
+                validate: { type: Function as PropType<ActionProps['validate']>, required: true },
+                mode: { type: String, required: true },
+                record: { type: Object as PropType<ActionProps['record']>, required: true },
+                submitText: { type: String, required: true },
+                cancelText: { type: String, required: true },
+            },
+            setup: (props: ActionProps) => () => h('button', { type: 'button', onClick: props.submit }, `${props.submitText} ${props.record.title}`),
         })
         renderForm(formModel({}, { submitText: 'Publish', cancelText: 'Discard' }))
         expect(screen.getByRole('button', { name: 'Publish' })).toBeInTheDocument()
