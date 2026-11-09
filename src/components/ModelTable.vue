@@ -3,6 +3,7 @@
 // as the model declares
 import { computed, useSlots, watch } from 'vue'
 import { VDataTable, VDataTableServer } from 'vuetify/components'
+import type { SortOption } from 'model-algebra-common'
 import ModelTableFilters from './ModelTableFilters.vue'
 import {
     fieldKind, fieldLabel, filterRows, formatValue, hasListOptions, listFilterOptions, listQuery, listSortOptions,
@@ -60,10 +61,16 @@ const filterOptions = computed(() => queryMode.value ? listFilterOptions(props.m
 const sortableFields = computed(() => new Set(sortOptions.value.map(option => option.field).filter(Boolean)))
 const columnNames = computed(() => new Set(columns.value.map(field => field.name)))
 
-/** Sort orders a column can't give: of the model, named definitions after a field's first, fields without columns. */
-const extraSortOptions = computed(() => sortOptions.value.filter((option, i) =>
-    option.field === undefined || !columnNames.value.has(option.field)
-    || sortOptions.value.findIndex(o => o.field === option.field) !== i))
+/** The sort option of a column: the unnamed definition of its field, or the first one. */
+const columnSortOption = (name: string): SortOption | undefined =>
+    sortOptions.value.find(option => option.key === name) ?? sortOptions.value.find(option => option.field === name)
+
+/** Sort orders a column can't give: of the model, other definitions of a field, fields without columns. */
+const extraSortOptions = computed(() => sortOptions.value.filter(option => {
+    if (option.field === undefined) return true
+    if (!columnNames.value.has(option.field)) return true
+    return option.key !== columnSortOption(option.field)?.key
+}))
 
 const headers = computed(() => columns.value.map(field => {
     const kind = fieldKind(field)
@@ -75,13 +82,30 @@ const headers = computed(() => columns.value.map(field => {
     }
 }))
 
-/** The table's sort order, in directions the sort keys allow. */
+/** The order a click on a column gives: the first the model allows, then the other one, then no order at all. */
+function nextOrder(option: SortOption, previous?: 'asc' | 'desc'): 'asc' | 'desc' | undefined {
+    if (previous === undefined) return option.directions[0]
+    const other = previous === 'asc' ? 'desc' : 'asc'
+    return option.directions.includes(other) ? other : undefined
+}
+
+/**
+ * The sort order of the table, as the data table shows it: the columns that are sorted.
+ * A click on a column sorts it by the most relevant definition of its field, in the direction the model allows; the
+ * next click reverses the direction, and the one after that leaves the column unsorted.
+ */
 const sortBy = computed({
-    get: () => sort.value,
+    get: () => sort.value.map(item => {
+        const field = sortOptionOf(props.model, item.key)?.field
+        return field !== undefined && columnNames.value.has(field) ? { key: field, order: item.order } : item
+    }),
     set: (items: SortItem[]) => {
-        sort.value = items.map(item => {
-            const directions = sortOptionOf(props.model, item.key)?.directions ?? ['asc', 'desc']
-            return directions.includes(item.order) ? item : { key: item.key, order: directions[0] }
+        sort.value = items.flatMap(item => {
+            const option = columnSortOption(item.key)
+            if (option === undefined) return [item]
+            const previous = sort.value.find(one => sortOptionOf(props.model, one.key)?.field === item.key)
+            const order = nextOrder(option, previous?.order)
+            return order === undefined ? [] : [{ key: item.key, order }]
         })
     },
 })

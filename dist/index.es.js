@@ -1,35 +1,35 @@
-import { inject as oe, computed as m, isRef as q, provide as he, ref as X, watch as Y, defineComponent as w, mergeModels as N, useModel as O, createBlock as $, openBlock as b, unref as r, resolveDynamicComponent as J, h as ee, useSlots as $e, createElementBlock as C, Fragment as B, renderSlot as z, createVNode as k, withCtx as h, renderList as P, createTextVNode as F, toDisplayString as j, createCommentVNode as I, createSlots as Ve, normalizeClass as pt, withModifiers as gt, normalizeProps as Z, guardReactiveProps as de, mergeProps as te, toHandlers as bt } from "vue";
-import { VCheckbox as He, VRow as ht, VCol as $t, VAlert as Vt, VInput as ke, VCard as ce, VCardItem as me, VCardTitle as fe, VCardSubtitle as We, VBtn as L, VCardText as ve, VCombobox as kt, VSelect as Xe, VTextField as Qe, VTextarea as St, VForm as Mt, VSpacer as Tt, VDataTableServer as xt, VDataTable as Ot } from "vuetify/components";
-import { sortOptions as Nt, filterOptions as Ft } from "model-algebra-common";
-const _e = /* @__PURE__ */ new Map([
+import { inject as re, computed as m, isRef as K, provide as $e, ref as X, watch as J, defineComponent as A, mergeModels as N, useModel as x, createBlock as V, openBlock as b, unref as s, resolveDynamicComponent as G, h as ee, useSlots as Ve, createElementBlock as C, Fragment as q, renderSlot as Y, createVNode as M, withCtx as $, renderList as P, createTextVNode as w, toDisplayString as j, createCommentVNode as I, createSlots as ke, normalizeClass as $t, withModifiers as Vt, normalizeProps as Z, guardReactiveProps as ce, mergeProps as te, toHandlers as kt } from "vue";
+import { VCheckbox as We, VRow as St, VCol as Mt, VAlert as Tt, VInput as Se, VCard as me, VCardItem as fe, VCardTitle as ve, VCardSubtitle as Xe, VBtn as L, VCardText as ye, VCombobox as Ot, VSelect as Qe, VTextField as _e, VTextarea as xt, VForm as Nt, VSpacer as Ft, VDataTableServer as wt, VDataTable as At } from "vuetify/components";
+import { sortOptions as Et, filterOptions as jt } from "model-algebra-common";
+const et = /* @__PURE__ */ new Map([
   ["integer", void 0],
   ["INT16", [-32768, 32767]],
   ["INT32", [-2147483648, 2147483647]],
   ["INT64", void 0]
-]), wt = /* @__PURE__ */ new Set(["number", "FLOAT32", "FLOAT64", "DECIMAL"]), At = /* @__PURE__ */ new Set(["string", "STRING", "UUID", "DURATION"]), Et = /* @__PURE__ */ new Set(["DATETIME", "TIMESTAMP", "TIMESTAMP_TZ"]), jt = /* @__PURE__ */ new Set(["JSON", "UNION", "object", "array"]);
+]), Ct = /* @__PURE__ */ new Set(["number", "FLOAT32", "FLOAT64", "DECIMAL"]), It = /* @__PURE__ */ new Set(["string", "STRING", "UUID", "DURATION"]), Dt = /* @__PURE__ */ new Set(["DATETIME", "TIMESTAMP", "TIMESTAMP_TZ"]), Lt = /* @__PURE__ */ new Set(["JSON", "UNION", "object", "array"]);
 function R(e) {
   const t = e.constraints;
   return t == null ? {} : Array.isArray(t) ? Object.fromEntries(t.map((n) => [n.name, n.value])) : t;
 }
-function Se(e) {
+function Me(e) {
   const t = R(e).enum;
   if (Array.isArray(t)) return t;
   const n = e.type === "ARRAY" ? e.parameters?.items : e, l = n?.type === "ENUM" ? n.parameters?.values : void 0;
   return Array.isArray(l) ? l : void 0;
 }
-function re(e) {
+function ie(e) {
   const t = e.type;
-  return _e.has(t) ? "integer" : wt.has(t) ? "number" : At.has(t) ? "text" : t === "TEXT" ? "longText" : t === "boolean" || t === "BOOLEAN" ? "boolean" : t === "ENUM" ? "enum" : t === "date" || t === "DATE" ? "date" : t === "TIME" ? "time" : Et.has(t) ? "datetime" : t === "OBJECT" ? "object" : jt.has(t) ? "json" : "unsupported";
+  return et.has(t) ? "integer" : Ct.has(t) ? "number" : It.has(t) ? "text" : t === "TEXT" ? "longText" : t === "boolean" || t === "BOOLEAN" ? "boolean" : t === "ENUM" ? "enum" : t === "date" || t === "DATE" ? "date" : t === "TIME" ? "time" : Dt.has(t) ? "datetime" : t === "OBJECT" ? "object" : Lt.has(t) ? "json" : "unsupported";
 }
 function U(e) {
   if (e.type === "ARRAY") {
-    if (Se(e) !== void 0) return "multiEnum";
-    const t = e.parameters?.items, n = t !== void 0 ? re(t) : "json";
+    if (Me(e) !== void 0) return "multiEnum";
+    const t = e.parameters?.items, n = t !== void 0 ? ie(t) : "json";
     return n === "text" ? "tags" : n === "object" ? "objectList" : "json";
   }
-  return R(e).enum !== void 0 && re(e) === "text" ? "enum" : re(e);
+  return R(e).enum !== void 0 && ie(e) === "text" ? "enum" : ie(e);
 }
-function Ct(e) {
+function Ut(e) {
   const t = e.type === "ARRAY" ? e.parameters?.items : e, n = t?.type === "OBJECT" ? t.parameters?.ref : void 0;
   return typeof n == "string" ? n : void 0;
 }
@@ -42,19 +42,19 @@ function se(e) {
     return l === 0 ? o[0].toUpperCase() + o.slice(1) : o;
   }).join(" ");
 }
-function Me(e) {
+function Te(e) {
   const t = R(e);
   return t.nullable === !1 || t.required === !0;
 }
-function et(e, t) {
+function tt(e, t) {
   return !(t === "create" && R(e).identity !== void 0);
 }
-function It(e, t) {
+function Pt(e, t) {
   if (t === "view" || U(e) === "unsupported") return !1;
   const n = R(e);
   return n.identity === "always" ? !1 : !(t === "edit" && (n.primaryKey === !0 || n.identity !== void 0));
 }
-function tt(e, t, n = []) {
+function nt(e, t, n = []) {
   const l = new Map(e.fields.map((a) => [a.name, a]));
   return (t === void 0 ? e.fields : t.map((a) => {
     const u = l.get(a);
@@ -63,27 +63,27 @@ function tt(e, t, n = []) {
     return u;
   })).filter((a) => !n.includes(a.name));
 }
-function Dt(e) {
+function Rt(e) {
   const t = e.fields.find((l) => R(l).primaryKey === !0);
   if (t !== void 0) return t.name;
   const n = e.constraints?.find((l) => l.type === "primaryKey");
   return n?.fields?.length === 1 ? n.fields[0] : void 0;
 }
-function Te(e) {
+function Oe(e) {
   return Object.fromEntries(e.fields.map((t) => {
     const n = R(t).default, l = n !== null && typeof n == "object" && "value" in n ? n.value : null;
     return [t.name, l];
   }));
 }
-const H = (e, t = 2) => String(e).padStart(t, "0"), De = (e) => `${e.getFullYear()}-${H(e.getMonth() + 1)}-${H(e.getDate())}`, Le = (e) => `${H(e.getHours())}:${H(e.getMinutes())}:${H(e.getSeconds())}`;
-function Ue(e) {
+const H = (e, t = 2) => String(e).padStart(t, "0"), Le = (e) => `${e.getFullYear()}-${H(e.getMonth() + 1)}-${H(e.getDate())}`, Ue = (e) => `${H(e.getHours())}:${H(e.getMinutes())}:${H(e.getSeconds())}`;
+function Pe(e) {
   if (e instanceof Date) return e;
   if (typeof e == "string" && /(Z|[+-]\d\d:?\d\d)$/.test(e)) return new Date(e);
 }
 function Q(e) {
   return e == null || e === "" || Array.isArray(e) && e.length === 0;
 }
-function Pe(e, t) {
+function Re(e, t) {
   const n = U(e);
   switch (n) {
     case "multiEnum":
@@ -97,14 +97,14 @@ function Pe(e, t) {
   if (t == null) return "";
   switch (n) {
     case "date": {
-      const l = Ue(t);
-      return l !== void 0 ? De(l) : String(t).slice(0, 10);
+      const l = Pe(t);
+      return l !== void 0 ? Le(l) : String(t).slice(0, 10);
     }
     case "time":
-      return t instanceof Date ? Le(t) : String(t);
+      return t instanceof Date ? Ue(t) : String(t);
     case "datetime": {
-      const l = Ue(t);
-      return l !== void 0 ? `${De(l)}T${Le(l)}` : String(t).replace(" ", "T").slice(0, 19);
+      const l = Pe(t);
+      return l !== void 0 ? `${Le(l)}T${Ue(l)}` : String(t).replace(" ", "T").slice(0, 19);
     }
     case "json":
     case "object":
@@ -114,7 +114,7 @@ function Pe(e, t) {
       return String(t);
   }
 }
-function ye(e, t) {
+function pe(e, t) {
   const n = U(e);
   if (n === "multiEnum" || n === "tags")
     return { ok: !0, value: Array.isArray(t) ? t : [] };
@@ -142,14 +142,14 @@ function ye(e, t) {
       return { ok: !0, value: t };
   }
 }
-const Lt = {
+const Bt = {
   "=": "equal to",
   "!=": "different from",
   "<": "less than",
   "<=": "at most",
   ">": "greater than",
   ">=": "at least"
-}, Re = {
+}, Be = {
   required: (e) => `${e} is required`,
   number: (e) => `${e} must be a number`,
   integer: (e) => `${e} must be a whole number`,
@@ -163,47 +163,47 @@ const Lt = {
   duration: (e) => `${e} must be an ISO 8601 duration, e.g. P1DT2H`,
   date: (e) => `${e} must be a valid date`,
   json: (e) => `${e} must be valid JSON`,
-  check: (e, t, n) => `${e} must be ${Lt[t]} ${n}`
+  check: (e, t, n) => `${e} must be ${Bt[t]} ${n}`
 };
 function xe(e) {
-  return e === void 0 ? Re : { ...Re, ...e };
+  return e === void 0 ? Be : { ...Be, ...e };
 }
-const Ut = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, Pt = /^-?P(?!$)(\d+(\.\d+)?Y)?(\d+(\.\d+)?M)?(\d+(\.\d+)?W)?(\d+(\.\d+)?D)?(T(?=\d)(\d+(\.\d+)?H)?(\d+(\.\d+)?M)?(\d+(\.\d+)?S)?)?$/;
-function Rt(e) {
+const qt = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, Kt = /^-?P(?!$)(\d+(\.\d+)?Y)?(\d+(\.\d+)?M)?(\d+(\.\d+)?W)?(\d+(\.\d+)?D)?(T(?=\d)(\d+(\.\d+)?H)?(\d+(\.\d+)?M)?(\d+(\.\d+)?S)?)?$/;
+function zt(e) {
   const [t, n] = String(e).split("e"), l = t.split(".")[1]?.length ?? 0;
   return Math.max(0, l - Number(n ?? 0));
 }
-const Bt = (e) => e instanceof Date ? !Number.isNaN(e.getTime()) : !Number.isNaN(new Date(String(e)).getTime());
-function Oe(e, t) {
-  const n = xe(t), l = D(e), o = U(e), a = R(e), u = e.parameters ?? {}, c = [], i = (d, s) => c.push((v) => d(v) || s);
+const Yt = (e) => e instanceof Date ? !Number.isNaN(e.getTime()) : !Number.isNaN(new Date(String(e)).getTime());
+function Ne(e, t) {
+  const n = xe(t), l = D(e), o = U(e), a = R(e), u = e.parameters ?? {}, c = [], i = (d, r) => c.push((v) => d(v) || r);
   if ((o === "integer" || o === "number") && i((d) => typeof d == "number" && Number.isFinite(d), n.number(l)), o === "integer") {
-    i((s) => Number.isInteger(s), n.integer(l));
-    const d = _e.get(e.type);
-    d !== void 0 && (i((s) => s >= d[0], n.min(l, d[0])), i((s) => s <= d[1], n.max(l, d[1])));
+    i((r) => Number.isInteger(r), n.integer(l));
+    const d = et.get(e.type);
+    d !== void 0 && (i((r) => r >= d[0], n.min(l, d[0])), i((r) => r <= d[1], n.max(l, d[1])));
   }
-  if (e.type === "DECIMAL" && typeof u.scale == "number" && i((d) => Rt(d) <= u.scale, n.decimals(l, u.scale)), typeof a.min == "number" && i((d) => d >= a.min, n.min(l, a.min)), typeof a.max == "number" && i((d) => d <= a.max, n.max(l, a.max)), e.type === "STRING" && typeof u.length == "number" && i((d) => String(d).length <= u.length, n.maxLength(l, u.length)), e.type === "UUID" && i((d) => Ut.test(String(d)), n.uuid(l)), e.type === "DURATION" && i((d) => Pt.test(String(d)), n.duration(l)), typeof a.regex == "string" && e.type !== "ARRAY") {
+  if (e.type === "DECIMAL" && typeof u.scale == "number" && i((d) => zt(d) <= u.scale, n.decimals(l, u.scale)), typeof a.min == "number" && i((d) => d >= a.min, n.min(l, a.min)), typeof a.max == "number" && i((d) => d <= a.max, n.max(l, a.max)), e.type === "STRING" && typeof u.length == "number" && i((d) => String(d).length <= u.length, n.maxLength(l, u.length)), e.type === "UUID" && i((d) => qt.test(String(d)), n.uuid(l)), e.type === "DURATION" && i((d) => Kt.test(String(d)), n.duration(l)), typeof a.regex == "string" && e.type !== "ARRAY") {
     const d = new RegExp(a.regex);
-    i((s) => d.test(String(s)), n.pattern(l, a.regex));
+    i((r) => d.test(String(r)), n.pattern(l, a.regex));
   }
-  const f = Se(e);
+  const f = Me(e);
   f !== void 0 && i(
-    (d) => Array.isArray(d) ? d.every((s) => f.includes(s)) : f.includes(d),
+    (d) => Array.isArray(d) ? d.every((r) => f.includes(r)) : f.includes(d),
     n.oneOf(l, f)
-  ), (o === "date" || o === "datetime") && i(Bt, n.date(l));
-  const y = Me(e);
+  ), (o === "date" || o === "datetime") && i(Yt, n.date(l));
+  const y = Te(e);
   return [(d) => {
     if (Q(d)) return y ? n.required(l) : !0;
-    for (const s of c) {
-      const v = s(d);
+    for (const r of c) {
+      const v = r(d);
       if (v !== !0) return v;
     }
     return !0;
   }];
 }
-function qt(e, t) {
-  const n = xe(t), l = D(e), o = Oe(e, t);
+function Jt(e, t) {
+  const n = xe(t), l = D(e), o = Ne(e, t);
   return [(a) => {
-    const u = ye(e, a);
+    const u = pe(e, a);
     if (!u.ok) return n[u.error](l);
     for (const c of o) {
       const i = c(u.value);
@@ -212,8 +212,8 @@ function qt(e, t) {
     return !0;
   }];
 }
-const Be = (e) => e instanceof Date ? e.getTime() : e;
-function Kt(e, t, n) {
+const qe = (e) => e instanceof Date ? e.getTime() : e;
+function Gt(e, t, n) {
   switch (e) {
     case "=":
       return t === n;
@@ -229,7 +229,7 @@ function Kt(e, t, n) {
       return t >= n;
   }
 }
-function zt(e, t, n) {
+function Zt(e, t, n) {
   const l = xe(n), o = new Map(e.fields.map((c) => [c.name, c])), a = (c) => {
     const i = o.get(c);
     return i !== void 0 ? D(i) : c;
@@ -237,20 +237,20 @@ function zt(e, t, n) {
   for (const c of e.constraints ?? []) {
     if (c.type !== "check" || c.rule === void 0) continue;
     const i = c.rule, f = t[i.field], y = i.otherField !== void 0 ? t[i.otherField] : i.value;
-    if (!(Q(f) || Q(y)) && !Kt(i.op, Be(f), Be(y))) {
+    if (!(Q(f) || Q(y)) && !Gt(i.op, qe(f), qe(y))) {
       const d = i.otherField !== void 0 ? a(i.otherField) : String(i.value);
       u.push(l.check(a(i.field), i.op, d));
     }
   }
   return u;
 }
-const qe = 60;
-function Ke(e) {
+const Ke = 60;
+function ze(e) {
   if (e instanceof Date) return e;
   const t = String(e), n = /^(\d{4})-(\d{2})-(\d{2})$/.exec(t);
   return n !== null ? new Date(Number(n[1]), Number(n[2]) - 1, Number(n[3])) : new Date(t);
 }
-function pe(e, t, n) {
+function ge(e, t, n) {
   if (t == null) return "";
   switch (U(e)) {
     case "integer":
@@ -262,11 +262,11 @@ function pe(e, t, n) {
     case "boolean":
       return t ? "Yes" : "No";
     case "date": {
-      const l = Ke(t);
+      const l = ze(t);
       return Number.isNaN(l.getTime()) ? String(t) : l.toLocaleDateString(n);
     }
     case "datetime": {
-      const l = Ke(t);
+      const l = ze(t);
       return Number.isNaN(l.getTime()) ? String(t) : l.toLocaleString(n);
     }
     case "multiEnum":
@@ -276,7 +276,7 @@ function pe(e, t, n) {
     case "object":
     case "objectList": {
       const l = JSON.stringify(t);
-      return l.length > qe ? `${l.slice(0, qe - 1)}…` : l;
+      return l.length > Ke ? `${l.slice(0, Ke - 1)}…` : l;
     }
     case "unsupported":
       return t instanceof Uint8Array ? `${t.length} bytes` : String(t);
@@ -284,47 +284,47 @@ function pe(e, t, n) {
       return String(t);
   }
 }
-function ze(e) {
+function Ye(e) {
   if (typeof e == "function") return e;
   const t = new Map(Array.isArray(e) ? e.map((n) => [n.metadata.name, n]) : Object.entries(e));
   return (n) => t.get(n);
 }
-const Yt = { "=": "=", "!=": "≠", "<": "<", "<=": "≤", ">": ">", ">=": "≥" }, ge = (e) => {
+const Ht = { "=": "=", "!=": "≠", "<": "<", "<=": "≤", ">": ">", ">=": "≥" }, be = (e) => {
   const t = se(e);
   return t.charAt(0).toLowerCase() + t.slice(1);
 };
-function Jt(e) {
+function Wt(e) {
   return e.fields.some((t) => t.sortable !== void 0 || t.filterable !== void 0) || e.sortings !== void 0 || e.filters !== void 0;
 }
-const nt = (e) => Nt(e), Ne = (e) => Ft(e);
+const lt = (e) => Et(e), Fe = (e) => jt(e);
 function ne(e, t) {
   return e.fields.find((n) => n.name === t);
 }
-function Gt(e, t) {
+function Xt(e, t) {
   if (t.field === void 0) return se(t.key);
   const n = D(ne(e, t.field));
-  return t.definitionName === "" ? n : `${n}: ${ge(t.definitionName)}`;
+  return t.definitionName === "" ? n : `${n}: ${be(t.definitionName)}`;
 }
-function lt(e, t) {
+function at(e, t) {
   if (t.scope === "model") return se(t.name);
-  const n = D(ne(e, t.field)), l = t.definitionName !== "" ? `${n}: ${ge(t.definitionName)}` : n;
-  if (t.predicate !== void 0) return t.definitionName !== "" ? l : `${n}: ${ge(t.predicate)}`;
-  const o = t.op === "=" && t.input === "value" ? "" : ` ${Yt[t.op]}`;
+  const n = D(ne(e, t.field)), l = t.definitionName !== "" ? `${n}: ${be(t.definitionName)}` : n;
+  if (t.predicate !== void 0) return t.definitionName !== "" ? l : `${n}: ${be(t.predicate)}`;
+  const o = t.op === "=" && t.input === "value" ? "" : ` ${Ht[t.op]}`;
   if (t.input === "value") return `${l}${o}`;
   if (t.definitionName !== "") return l;
   const a = t.otherField !== void 0 ? D(ne(e, t.otherField)) : String(t.value);
   return `${n}${o} ${a}`;
 }
-function Zt(e, t) {
+function Qt(e, t) {
   const n = t.valueType === "field" || t.valueType === void 0 ? ne(e, t.field) : t.valueType;
   return {
     name: t.name,
-    label: lt(e, t),
+    label: at(e, t),
     type: n.type,
     ...n.parameters !== void 0 ? { parameters: n.parameters } : {}
   };
 }
-function Fe(e, t) {
+function we(e, t) {
   return e.input === "switch" ? t === !0 : !Q(t);
 }
 function W(e, t, n, l) {
@@ -333,7 +333,7 @@ function W(e, t, n, l) {
   return o(...l);
 }
 const le = (e) => e instanceof Date ? e.getTime() : e;
-function Ht(e, t, n) {
+function _t(e, t, n) {
   if (e == null || n === null || n === void 0) return !1;
   const l = le(e), o = le(n);
   switch (t) {
@@ -351,50 +351,50 @@ function Ht(e, t, n) {
       return l >= o;
   }
 }
-function Wt(e, t, n, l) {
+function en(e, t, n, l) {
   const o = e.input === "value" ? [n] : [];
   if (e.predicate !== void 0) {
     const i = e.scope === "field" ? [t[e.field], t, ...o] : [t, ...o];
     return W(l.predicates, e.predicate, "predicate", i) === !0;
   }
   const a = t[e.field], u = e.function !== void 0 ? W(l.functions, e.function, "function", [a, t]) : a, c = e.input === "value" ? n : e.otherField !== void 0 ? t[e.otherField] : e.value;
-  return Ht(u, e.op, c);
+  return _t(u, e.op, c);
 }
-function Xt(e, t, n, l = {}) {
-  const o = Ne(e).filter((a) => Fe(a, n[a.name]));
-  return o.length === 0 ? t : t.filter((a) => o.every((u) => Wt(u, a, n[u.name], l)));
+function tn(e, t, n, l = {}) {
+  const o = Fe(e).filter((a) => we(a, n[a.name]));
+  return o.length === 0 ? t : t.filter((a) => o.every((u) => en(u, a, n[u.name], l)));
 }
-function Ye(e, t, n, l = "last") {
+function Je(e, t, n, l = "last") {
   const o = e == null, a = t == null;
   if (o || a) return o === a ? 0 : o === (l === "first") ? -1 : 1;
   const u = le(e), c = le(t);
   return (typeof u == "string" && typeof c == "string" ? u.localeCompare(c) : u < c ? -1 : u > c ? 1 : 0) * n;
 }
-function we(e, t) {
-  const n = nt(e);
+function ae(e, t) {
+  const n = lt(e);
   return n.find((l) => l.key === t) ?? n.find((l) => l.field === t);
 }
-function Qt(e, t, n, l = {}) {
+function nn(e, t, n, l = {}) {
   const o = n.map((a) => {
-    const u = we(e, a.key);
+    const u = ae(e, a.key);
     if (u === void 0) throw new Error(`Model ${e.metadata.name} can't be sorted by ${a.key}`);
     const c = a.order === "desc" ? -1 : 1;
     if (u.sortKeys !== void 0) {
-      const d = u.sortKeys.map((s) => ({
-        value: (v) => s.field === void 0 ? W(l.functions, s.function, "function", [v]) : s.function !== void 0 ? W(l.functions, s.function, "function", [v[s.field], v]) : v[s.field],
-        sign: s.direction === "desc" ? -1 : 1,
-        nulls: s.nulls
+      const d = u.sortKeys.map((r) => ({
+        value: (v) => r.field === void 0 ? W(l.functions, r.function, "function", [v]) : r.function !== void 0 ? W(l.functions, r.function, "function", [v[r.field], v]) : v[r.field],
+        sign: r.direction === "desc" ? -1 : 1,
+        nulls: r.nulls
       }));
-      return (s, v) => {
+      return (r, v) => {
         for (const g of d) {
-          const p = Ye(g.value(s), g.value(v), g.sign * c, g.nulls);
+          const p = Je(g.value(r), g.value(v), g.sign * c, g.nulls);
           if (p !== 0) return p;
         }
         return 0;
       };
     }
     const { field: i, definition: f } = u, y = (d) => f.function !== void 0 ? W(l.functions, f.function, "function", [d[i], d]) : d[i];
-    return (d, s) => Ye(y(d), y(s), c, f.nulls);
+    return (d, r) => Je(y(d), y(r), c, f.nulls);
   });
   return o.length === 0 ? t : [...t].sort((a, u) => {
     for (const c of o) {
@@ -404,58 +404,58 @@ function Qt(e, t, n, l = {}) {
     return 0;
   });
 }
-function _t(e, t) {
+function ln(e, t) {
   return t.map((n) => {
-    const l = we(e, n.key);
+    const l = ae(e, n.key);
     if (l === void 0) throw new Error(`Model ${e.metadata.name} can't be sorted by ${n.key}`);
     return n.order === "desc" ? `-${l.key}` : l.key;
   });
 }
-function en(e, t) {
+function an(e, t) {
   const n = {};
   t.itemsPerPage > 0 && (n.limit = t.itemsPerPage, n.offset = (t.page - 1) * t.itemsPerPage);
-  const l = _t(e, t.sort);
+  const l = ln(e, t.sort);
   l.length > 0 && (n.sort = l.join(","));
-  for (const o of Ne(e))
-    Fe(o, t.filters[o.name]) && (n[o.name] = t.filters[o.name]);
+  for (const o of Fe(e))
+    we(o, t.filters[o.name]) && (n[o.name] = t.filters[o.name]);
   return n;
 }
-const ae = (e) => e.form ?? {}, at = (e) => e.form ?? {};
-function tn(e) {
-  const { label: t, hint: n } = ae(e);
+const oe = (e) => e.form ?? {}, ot = (e) => e.form ?? {};
+function on(e) {
+  const { label: t, hint: n } = oe(e);
   return t === void 0 && n === void 0 ? e : Object.assign(Object.create(Object.getPrototypeOf(e)), e, {
     ...t !== void 0 ? { label: t } : {},
     ...n !== void 0 ? { description: n } : {}
   });
 }
-const Je = /* @__PURE__ */ Symbol("vuetify-bridge models"), nn = () => {
+const Ge = /* @__PURE__ */ Symbol("vuetify-bridge models"), rn = () => {
 };
-function ot(e) {
-  const t = oe(Je, void 0), n = m(() => {
+function rt(e) {
+  const t = re(Ge, void 0), n = m(() => {
     const l = e();
-    return l !== void 0 ? ze(l) : t === void 0 ? nn : q(t) ? t.value : ze(t);
+    return l !== void 0 ? Ye(l) : t === void 0 ? rn : K(t) ? t.value : Ye(t);
   });
-  return he(Je, n), n;
+  return $e(Ge, n), n;
 }
-const Ge = (e, t) => e === t || JSON.stringify(e) === JSON.stringify(t);
+const Ze = (e, t) => e === t || JSON.stringify(e) === JSON.stringify(t);
 function _(e, t, n) {
-  const l = X(Pe(e(), t.value));
-  return Y(l, (o) => {
-    const a = ye(e(), o);
-    a.ok && !Ge(a.value, t.value) && (t.value = a.value);
-  }), Y([t, e], ([o]) => {
-    const a = ye(e(), l.value);
-    (!a.ok || !Ge(a.value, o)) && (l.value = Pe(e(), o));
+  const l = X(Re(e(), t.value));
+  return J(l, (o) => {
+    const a = pe(e(), o);
+    a.ok && !Ze(a.value, t.value) && (t.value = a.value);
+  }), J([t, e], ([o]) => {
+    const a = pe(e(), l.value);
+    (!a.ok || !Ze(a.value, o)) && (l.value = Re(e(), o));
   }, { deep: !0 }), {
     input: l,
     kind: m(() => U(e())),
     label: m(() => D(e())),
     hint: m(() => e().description),
-    required: m(() => Me(e())),
-    rules: m(() => qt(e(), n()))
+    required: m(() => Te(e())),
+    rules: m(() => Jt(e(), n()))
   };
 }
-const ln = /* @__PURE__ */ w({
+const sn = /* @__PURE__ */ A({
   __name: "ModelBooleanField",
   props: /* @__PURE__ */ N({
     field: {},
@@ -467,18 +467,18 @@ const ln = /* @__PURE__ */ w({
   }),
   emits: ["update:modelValue"],
   setup(e) {
-    const t = e, n = O(e, "modelValue"), { input: l, label: o, hint: a, rules: u } = _(() => t.field, n, () => t.messages);
-    return (c, i) => (b(), $(r(He), {
-      modelValue: r(l),
-      "onUpdate:modelValue": i[0] || (i[0] = (f) => q(l) ? l.value = f : null),
-      label: r(o),
-      hint: r(a),
-      "persistent-hint": r(a) !== void 0,
-      rules: r(u),
+    const t = e, n = x(e, "modelValue"), { input: l, label: o, hint: a, rules: u } = _(() => t.field, n, () => t.messages);
+    return (c, i) => (b(), V(s(We), {
+      modelValue: s(l),
+      "onUpdate:modelValue": i[0] || (i[0] = (f) => K(l) ? l.value = f : null),
+      label: s(o),
+      hint: s(a),
+      "persistent-hint": s(a) !== void 0,
+      rules: s(u),
       readonly: e.readonly
     }, null, 8, ["modelValue", "label", "hint", "persistent-hint", "rules", "readonly"]));
   }
-}), an = /* @__PURE__ */ w({
+}), un = /* @__PURE__ */ A({
   __name: "ModelInputControl",
   props: /* @__PURE__ */ N({
     field: {},
@@ -491,40 +491,40 @@ const ln = /* @__PURE__ */ w({
   }),
   emits: ["update:modelValue"],
   setup(e) {
-    const t = e, n = O(e, "modelValue"), { input: l, label: o, hint: a, rules: u } = _(() => t.field, n, () => t.messages);
-    return (c, i) => (b(), $(J(e.control), {
-      modelValue: r(l),
-      "onUpdate:modelValue": i[0] || (i[0] = (f) => q(l) ? l.value = f : null),
-      label: r(o),
-      hint: r(a),
-      rules: r(u),
+    const t = e, n = x(e, "modelValue"), { input: l, label: o, hint: a, rules: u } = _(() => t.field, n, () => t.messages);
+    return (c, i) => (b(), V(G(e.control), {
+      modelValue: s(l),
+      "onUpdate:modelValue": i[0] || (i[0] = (f) => K(l) ? l.value = f : null),
+      label: s(o),
+      hint: s(a),
+      rules: s(u),
       readonly: e.readonly
     }, null, 8, ["modelValue", "label", "hint", "rules", "readonly"]));
   }
-}), be = /* @__PURE__ */ Symbol("FormComponents"), st = (e) => (t) => typeof t != "string" ? t : e()[t] ?? J(t);
-function on(e) {
-  const t = oe(be, {}), n = m(() => ({ ...r(t), ...e() }));
-  return he(be, n), st(() => n.value);
+}), he = /* @__PURE__ */ Symbol("FormComponents"), st = (e) => (t) => typeof t != "string" ? t : e()[t] ?? G(t);
+function dn(e) {
+  const t = re(he, {}), n = m(() => ({ ...s(t), ...e() }));
+  return $e(he, n), st(() => n.value);
 }
-function sn() {
-  const e = oe(be, {});
-  return st(() => r(e));
+function cn() {
+  const e = re(he, {});
+  return st(() => s(e));
 }
-const rt = /* @__PURE__ */ Symbol("FormFields");
-function rn(e) {
-  he(rt, e);
+const it = /* @__PURE__ */ Symbol("FormFields");
+function mn(e) {
+  $e(it, e);
 }
-function un() {
-  const e = oe(rt, void 0);
+function fn() {
+  const e = re(it, void 0);
   if (e === void 0) throw new Error("ModelFormField must be inside a ModelForm or ModelFields");
   return e;
 }
-function Ze(e, t) {
+function He(e, t) {
   if (typeof e == "string") return !1;
   const n = e.props;
   return Array.isArray(n) ? n.includes(t) : typeof n == "object" && n !== null && t in n;
 }
-const dn = w({
+const vn = A({
   name: "ModelFormField",
   inheritAttrs: !1,
   props: {
@@ -534,21 +534,21 @@ const dn = w({
     field: { type: Object, default: void 0 }
   },
   setup(e, { attrs: t }) {
-    const n = un(), l = sn(), o = m(() => {
+    const n = fn(), l = cn(), o = m(() => {
       if (e.field !== void 0) return e.field;
       const a = n.model(), u = a.fields.find((c) => c.name === e.name);
       if (u === void 0) throw new Error(`Model ${a.metadata.name} has no field ${e.name}`);
       return u;
     });
     return () => {
-      const a = ae(o.value), u = tn(o.value), c = n.mode();
-      if (a.hidden === !0 || !et(u, c)) return null;
-      const i = n.record.value[u.name], f = (g) => n.update(u.name, g), y = !It(u, c), d = n.messages(), s = n.slots[`field.${u.name}`], v = () => {
-        if (s !== void 0) return s({ field: u, value: i, update: f, readonly: y });
+      const a = oe(o.value), u = on(o.value), c = n.mode();
+      if (a.hidden === !0 || !tt(u, c)) return null;
+      const i = n.record.value[u.name], f = (g) => n.update(u.name, g), y = !Pt(u, c), d = n.messages(), r = n.slots[`field.${u.name}`], v = () => {
+        if (r !== void 0) return r({ field: u, value: i, update: f, readonly: y });
         const g = { ...a.props, ...t, modelValue: i, "onUpdate:modelValue": f, field: u, readonly: y, messages: d };
-        if (a.control === void 0) return ee(ut, { ...g, mode: c });
+        if (a.control === void 0) return ee(dt, { ...g, mode: c });
         const p = l(a.control);
-        return Ze(p, "field") ? ee(p, Ze(p, "mode") ? { ...g, mode: c } : g) : ee(an, { ...g, control: p });
+        return He(p, "field") ? ee(p, He(p, "mode") ? { ...g, mode: c } : g) : ee(un, { ...g, control: p });
       };
       return a.row === void 0 ? v() : ee(
         l(a.row),
@@ -557,7 +557,7 @@ const dn = w({
       );
     };
   }
-}), Ae = /* @__PURE__ */ w({
+}), Ae = /* @__PURE__ */ A({
   __name: "ModelFields",
   props: /* @__PURE__ */ N({
     model: {},
@@ -572,35 +572,35 @@ const dn = w({
   }),
   emits: ["update:modelValue"],
   setup(e) {
-    const t = e, n = O(e, "modelValue"), l = $e(), o = m(() => tt(t.model, t.fields ?? at(t.model).order, t.exclude).filter((y) => et(y, t.mode) && ae(y).hidden !== !0)), a = m(() => zt(t.model, n.value, t.messages)), u = [() => a.value.length === 0 || a.value[0]], c = /* @__PURE__ */ new Set(["longText", "json", "tags", "multiEnum", "object", "objectList"]), i = (y) => ae(y).cols ?? (c.has(U(y)) ? 12 : 6);
+    const t = e, n = x(e, "modelValue"), l = Ve(), o = m(() => nt(t.model, t.fields ?? ot(t.model).order, t.exclude).filter((y) => tt(y, t.mode) && oe(y).hidden !== !0)), a = m(() => Zt(t.model, n.value, t.messages)), u = [() => a.value.length === 0 || a.value[0]], c = /* @__PURE__ */ new Set(["longText", "json", "tags", "multiEnum", "object", "objectList"]), i = (y) => oe(y).cols ?? (c.has(U(y)) ? 12 : 6);
     function f(y, d) {
       n.value = { ...n.value, [y]: d };
     }
-    return rn({
+    return mn({
       model: () => t.model,
       record: n,
       update: f,
       mode: () => t.mode,
       messages: () => t.messages,
       slots: l
-    }), (y, d) => (b(), C(B, null, [
-      z(y.$slots, "default", {
+    }), (y, d) => (b(), C(q, null, [
+      Y(y.$slots, "default", {
         fields: o.value,
         record: n.value,
         update: f,
         mode: e.mode
       }, () => [
-        k(r(ht), null, {
-          default: h(() => [
-            (b(!0), C(B, null, P(o.value, (s) => (b(), $(r($t), {
-              key: s.name,
+        M(s(St), null, {
+          default: $(() => [
+            (b(!0), C(q, null, P(o.value, (r) => (b(), V(s(Mt), {
+              key: r.name,
               cols: "12",
-              md: i(s)
+              md: i(r)
             }, {
-              default: h(() => [
-                k(r(dn), {
-                  name: s.name,
-                  field: s
+              default: $(() => [
+                M(s(vn), {
+                  name: r.name,
+                  field: r
                 }, null, 8, ["name", "field"])
               ]),
               _: 2
@@ -609,19 +609,19 @@ const dn = w({
           _: 1
         })
       ]),
-      (b(!0), C(B, null, P(a.value, (s) => (b(), $(r(Vt), {
-        key: s,
+      (b(!0), C(q, null, P(a.value, (r) => (b(), V(s(Tt), {
+        key: r,
         type: "error",
         variant: "tonal",
         density: "compact",
         class: "mb-2"
       }, {
-        default: h(() => [
-          F(j(s), 1)
+        default: $(() => [
+          w(j(r), 1)
         ]),
         _: 2
       }, 1024))), 128)),
-      k(r(ke), {
+      M(s(Se), {
         "model-value": n.value,
         rules: u,
         class: "d-none",
@@ -629,7 +629,7 @@ const dn = w({
       }, null, 8, ["model-value"])
     ], 64));
   }
-}), cn = /* @__PURE__ */ w({
+}), yn = /* @__PURE__ */ A({
   __name: "ModelObjectField",
   props: /* @__PURE__ */ N({
     model: {},
@@ -643,71 +643,71 @@ const dn = w({
   }),
   emits: ["update:modelValue"],
   setup(e) {
-    const t = e, n = O(e, "modelValue"), l = m(() => D(t.field)), o = m(() => Me(t.field)), a = m(() => Oe(t.field, t.messages)), u = X(!1), c = m(() => t.readonly ? "view" : u.value ? "create" : t.mode ?? "edit");
+    const t = e, n = x(e, "modelValue"), l = m(() => D(t.field)), o = m(() => Te(t.field)), a = m(() => Ne(t.field, t.messages)), u = X(!1), c = m(() => t.readonly ? "view" : u.value ? "create" : t.mode ?? "edit");
     function i() {
-      u.value = !0, n.value = Te(t.model);
+      u.value = !0, n.value = Oe(t.model);
     }
     function f() {
       u.value = !1, n.value = null;
     }
-    return (y, d) => (b(), $(r(ke), {
+    return (y, d) => (b(), V(s(Se), {
       "model-value": n.value,
       rules: a.value,
       class: "model-object-field"
     }, {
-      default: h(() => [
-        k(r(ce), {
+      default: $(() => [
+        M(s(me), {
           variant: "outlined",
           class: "w-100"
         }, {
-          default: h(() => [
-            k(r(me), null, {
-              append: h(() => [
-                n.value == null && !e.readonly ? (b(), $(r(L), {
+          default: $(() => [
+            M(s(fe), null, {
+              append: $(() => [
+                n.value == null && !e.readonly ? (b(), V(s(L), {
                   key: 0,
                   variant: "tonal",
                   size: "small",
                   "prepend-icon": "$plus",
                   onClick: i
                 }, {
-                  default: h(() => [...d[1] || (d[1] = [
-                    F("Add", -1)
+                  default: $(() => [...d[1] || (d[1] = [
+                    w("Add", -1)
                   ])]),
                   _: 1
-                })) : n.value != null && !e.readonly && !o.value ? (b(), $(r(L), {
+                })) : n.value != null && !e.readonly && !o.value ? (b(), V(s(L), {
                   key: 1,
                   variant: "text",
                   size: "small",
                   "prepend-icon": "$delete",
                   onClick: f
                 }, {
-                  default: h(() => [...d[2] || (d[2] = [
-                    F("Remove", -1)
+                  default: $(() => [...d[2] || (d[2] = [
+                    w("Remove", -1)
                   ])]),
                   _: 1
                 })) : I("", !0)
               ]),
-              default: h(() => [
-                k(r(fe), { class: "text-body-1" }, {
-                  default: h(() => [
-                    F(j(l.value), 1)
+              default: $(() => [
+                M(s(ve), { class: "text-body-1" }, {
+                  default: $(() => [
+                    w(j(l.value), 1)
                   ]),
                   _: 1
                 }),
-                e.field.description ? (b(), $(r(We), { key: 0 }, {
-                  default: h(() => [
-                    F(j(e.field.description), 1)
+                e.field.description ? (b(), V(s(Xe), { key: 0 }, {
+                  default: $(() => [
+                    w(j(e.field.description), 1)
                   ]),
                   _: 1
                 })) : I("", !0)
               ]),
               _: 1
             }),
-            n.value != null ? (b(), $(r(ve), { key: 0 }, {
-              default: h(() => [
-                k(Ae, {
+            n.value != null ? (b(), V(s(ye), { key: 0 }, {
+              default: $(() => [
+                M(Ae, {
                   modelValue: n.value,
-                  "onUpdate:modelValue": d[0] || (d[0] = (s) => n.value = s),
+                  "onUpdate:modelValue": d[0] || (d[0] = (r) => n.value = r),
                   model: e.model,
                   mode: c.value,
                   messages: e.messages
@@ -722,10 +722,10 @@ const dn = w({
       _: 1
     }, 8, ["model-value", "rules"]));
   }
-}), mn = {
+}), pn = {
   key: 0,
   class: "text-medium-emphasis"
-}, fn = /* @__PURE__ */ w({
+}, gn = /* @__PURE__ */ A({
   __name: "ModelObjectListField",
   props: /* @__PURE__ */ N({
     model: {},
@@ -739,87 +739,87 @@ const dn = w({
   }),
   emits: ["update:modelValue"],
   setup(e) {
-    const t = e, n = O(e, "modelValue"), l = m(() => n.value ?? []), o = m(() => D(t.field)), a = m(() => D({ name: t.model.metadata.name })), u = m(() => Oe(t.field, t.messages));
+    const t = e, n = x(e, "modelValue"), l = m(() => n.value ?? []), o = m(() => D(t.field)), a = m(() => D({ name: t.model.metadata.name })), u = m(() => Ne(t.field, t.messages));
     let c = 0;
     const i = X([]), f = X(/* @__PURE__ */ new Set());
-    Y(() => l.value.length, (p) => {
+    J(() => l.value.length, (p) => {
       i.value.length !== p && (i.value = Array.from({ length: p }, () => c++));
     }, { immediate: !0 });
     const y = (p) => t.readonly ? "view" : f.value.has(i.value[p]) ? "create" : t.mode ?? "edit";
-    function d(p, A) {
-      n.value = l.value.map((T, S) => S === p ? A : T);
+    function d(p, E) {
+      n.value = l.value.map((O, T) => T === p ? E : O);
     }
-    function s() {
+    function r() {
       const p = c++;
-      i.value = [...i.value, p], f.value = new Set(f.value).add(p), n.value = [...l.value, Te(t.model)];
+      i.value = [...i.value, p], f.value = new Set(f.value).add(p), n.value = [...l.value, Oe(t.model)];
     }
     function v(p) {
-      i.value = i.value.filter((A, T) => T !== p), n.value = l.value.filter((A, T) => T !== p);
+      i.value = i.value.filter((E, O) => O !== p), n.value = l.value.filter((E, O) => O !== p);
     }
-    function g(p, A) {
-      const T = (S) => {
-        const E = [...S];
-        return [E[p], E[p + A]] = [E[p + A], E[p]], E;
+    function g(p, E) {
+      const O = (T) => {
+        const F = [...T];
+        return [F[p], F[p + E]] = [F[p + E], F[p]], F;
       };
-      i.value = T(i.value), n.value = T(l.value);
+      i.value = O(i.value), n.value = O(l.value);
     }
-    return (p, A) => (b(), $(r(ke), {
+    return (p, E) => (b(), V(s(Se), {
       "model-value": l.value,
       rules: u.value,
       class: "model-object-list-field"
     }, {
-      default: h(() => [
-        k(r(ce), {
+      default: $(() => [
+        M(s(me), {
           variant: "outlined",
           class: "w-100"
         }, {
-          default: h(() => [
-            k(r(me), null, {
-              append: h(() => [
-                e.readonly ? I("", !0) : (b(), $(r(L), {
+          default: $(() => [
+            M(s(fe), null, {
+              append: $(() => [
+                e.readonly ? I("", !0) : (b(), V(s(L), {
                   key: 0,
                   variant: "tonal",
                   size: "small",
                   "prepend-icon": "$plus",
-                  onClick: s
+                  onClick: r
                 }, {
-                  default: h(() => [
-                    F(" Add " + j(a.value.toLowerCase()), 1)
+                  default: $(() => [
+                    w(" Add " + j(a.value.toLowerCase()), 1)
                   ]),
                   _: 1
                 }))
               ]),
-              default: h(() => [
-                k(r(fe), { class: "text-body-1" }, {
-                  default: h(() => [
-                    F(j(o.value), 1)
+              default: $(() => [
+                M(s(ve), { class: "text-body-1" }, {
+                  default: $(() => [
+                    w(j(o.value), 1)
                   ]),
                   _: 1
                 }),
-                e.field.description ? (b(), $(r(We), { key: 0 }, {
-                  default: h(() => [
-                    F(j(e.field.description), 1)
+                e.field.description ? (b(), V(s(Xe), { key: 0 }, {
+                  default: $(() => [
+                    w(j(e.field.description), 1)
                   ]),
                   _: 1
                 })) : I("", !0)
               ]),
               _: 1
             }),
-            k(r(ve), null, {
-              default: h(() => [
-                l.value.length === 0 ? (b(), C("p", mn, "No " + j(a.value.toLowerCase()) + " items.", 1)) : I("", !0),
-                (b(!0), C(B, null, P(l.value, (T, S) => (b(), $(r(ce), {
-                  key: i.value[S],
+            M(s(ye), null, {
+              default: $(() => [
+                l.value.length === 0 ? (b(), C("p", pn, "No " + j(a.value.toLowerCase()) + " items.", 1)) : I("", !0),
+                (b(!0), C(q, null, P(l.value, (O, T) => (b(), V(s(me), {
+                  key: i.value[T],
                   variant: "tonal",
                   class: "mb-3",
-                  "aria-label": `${a.value} ${S + 1}`
+                  "aria-label": `${a.value} ${T + 1}`
                 }, {
-                  default: h(() => [
-                    k(r(me), null, Ve({
-                      default: h(() => [
-                        k(r(fe), { class: "text-body-2" }, {
-                          default: h(() => [
-                            F(j(a.value) + " " + j(S + 1), 1)
+                  default: $(() => [
+                    M(s(fe), null, ke({
+                      default: $(() => [
+                        M(s(ve), { class: "text-body-2" }, {
+                          default: $(() => [
+                            w(j(a.value) + " " + j(T + 1), 1)
                           ]),
                           _: 2
                         }, 1024)
@@ -828,42 +828,42 @@ const dn = w({
                     }, [
                       e.readonly ? void 0 : {
                         name: "append",
-                        fn: h(() => [
-                          k(r(L), {
+                        fn: $(() => [
+                          M(s(L), {
                             icon: "$expand",
                             variant: "text",
                             size: "small",
-                            disabled: S === l.value.length - 1,
-                            "aria-label": `Move ${a.value} ${S + 1} down`,
-                            onClick: (E) => g(S, 1)
+                            disabled: T === l.value.length - 1,
+                            "aria-label": `Move ${a.value} ${T + 1} down`,
+                            onClick: (F) => g(T, 1)
                           }, null, 8, ["disabled", "aria-label", "onClick"]),
-                          k(r(L), {
+                          M(s(L), {
                             icon: "$collapse",
                             variant: "text",
                             size: "small",
-                            disabled: S === 0,
-                            "aria-label": `Move ${a.value} ${S + 1} up`,
-                            onClick: (E) => g(S, -1)
+                            disabled: T === 0,
+                            "aria-label": `Move ${a.value} ${T + 1} up`,
+                            onClick: (F) => g(T, -1)
                           }, null, 8, ["disabled", "aria-label", "onClick"]),
-                          k(r(L), {
+                          M(s(L), {
                             icon: "$delete",
                             variant: "text",
                             size: "small",
-                            "aria-label": `Remove ${a.value} ${S + 1}`,
-                            onClick: (E) => v(S)
+                            "aria-label": `Remove ${a.value} ${T + 1}`,
+                            onClick: (F) => v(T)
                           }, null, 8, ["aria-label", "onClick"])
                         ]),
                         key: "0"
                       }
                     ]), 1024),
-                    k(r(ve), null, {
-                      default: h(() => [
-                        k(Ae, {
-                          "model-value": T,
+                    M(s(ye), null, {
+                      default: $(() => [
+                        M(Ae, {
+                          "model-value": O,
                           model: e.model,
-                          mode: y(S),
+                          mode: y(T),
                           messages: e.messages,
-                          "onUpdate:modelValue": (E) => d(S, E)
+                          "onUpdate:modelValue": (F) => d(T, F)
                         }, null, 8, ["model-value", "model", "mode", "messages", "onUpdate:modelValue"])
                       ]),
                       _: 2
@@ -881,7 +881,7 @@ const dn = w({
       _: 1
     }, 8, ["model-value", "rules"]));
   }
-}), ie = /* @__PURE__ */ w({
+}), ue = /* @__PURE__ */ A({
   __name: "ModelSelectField",
   props: /* @__PURE__ */ N({
     field: {},
@@ -893,34 +893,34 @@ const dn = w({
   }),
   emits: ["update:modelValue"],
   setup(e) {
-    const t = e, n = O(e, "modelValue"), { input: l, kind: o, label: a, hint: u, required: c, rules: i } = _(() => t.field, n, () => t.messages), f = m(() => Se(t.field) ?? []);
-    return (y, d) => r(o) === "tags" ? (b(), $(r(kt), {
+    const t = e, n = x(e, "modelValue"), { input: l, kind: o, label: a, hint: u, required: c, rules: i } = _(() => t.field, n, () => t.messages), f = m(() => Me(t.field) ?? []);
+    return (y, d) => s(o) === "tags" ? (b(), V(s(Ot), {
       key: 0,
-      modelValue: r(l),
-      "onUpdate:modelValue": d[0] || (d[0] = (s) => q(l) ? l.value = s : null),
-      label: r(a),
-      hint: r(u),
-      rules: r(i),
+      modelValue: s(l),
+      "onUpdate:modelValue": d[0] || (d[0] = (r) => K(l) ? l.value = r : null),
+      label: s(a),
+      hint: s(u),
+      rules: s(i),
       readonly: e.readonly,
       multiple: "",
       chips: "",
       "closable-chips": "",
       "hide-no-data": ""
-    }, null, 8, ["modelValue", "label", "hint", "rules", "readonly"])) : (b(), $(r(Xe), {
+    }, null, 8, ["modelValue", "label", "hint", "rules", "readonly"])) : (b(), V(s(Qe), {
       key: 1,
-      modelValue: r(l),
-      "onUpdate:modelValue": d[1] || (d[1] = (s) => q(l) ? l.value = s : null),
+      modelValue: s(l),
+      "onUpdate:modelValue": d[1] || (d[1] = (r) => K(l) ? l.value = r : null),
       items: f.value,
-      multiple: r(o) === "multiEnum",
-      chips: r(o) === "multiEnum",
-      clearable: !r(c) && !e.readonly,
-      label: r(a),
-      hint: r(u),
-      rules: r(i),
+      multiple: s(o) === "multiEnum",
+      chips: s(o) === "multiEnum",
+      clearable: !s(c) && !e.readonly,
+      label: s(a),
+      hint: s(u),
+      rules: s(i),
       readonly: e.readonly
     }, null, 8, ["modelValue", "items", "multiple", "chips", "clearable", "label", "hint", "rules", "readonly"]));
   }
-}), K = /* @__PURE__ */ w({
+}), z = /* @__PURE__ */ A({
   __name: "ModelTextField",
   props: /* @__PURE__ */ N({
     field: {},
@@ -932,7 +932,7 @@ const dn = w({
   }),
   emits: ["update:modelValue"],
   setup(e) {
-    const t = e, n = O(e, "modelValue"), { input: l, kind: o, label: a, hint: u, rules: c } = _(() => t.field, n, () => t.messages), i = {
+    const t = e, n = x(e, "modelValue"), { input: l, kind: o, label: a, hint: u, rules: c } = _(() => t.field, n, () => t.messages), i = {
       integer: "number",
       number: "number",
       date: "date",
@@ -943,8 +943,8 @@ const dn = w({
         case "integer":
           return 1;
         case "number": {
-          const s = t.field.type === "DECIMAL" ? t.field.parameters?.scale : void 0;
-          return typeof s == "number" ? 10 ** -s : "any";
+          const r = t.field.type === "DECIMAL" ? t.field.parameters?.scale : void 0;
+          return typeof r == "number" ? 10 ** -r : "any";
         }
         case "time":
         case "datetime":
@@ -953,19 +953,19 @@ const dn = w({
           return;
       }
     }), d = m(() => t.field.type === "STRING" && typeof t.field.parameters?.length == "number" ? t.field.parameters.length : void 0);
-    return (s, v) => (b(), $(r(Qe), {
-      modelValue: r(l),
-      "onUpdate:modelValue": v[0] || (v[0] = (g) => q(l) ? l.value = g : null),
+    return (r, v) => (b(), V(s(_e), {
+      modelValue: s(l),
+      "onUpdate:modelValue": v[0] || (v[0] = (g) => K(l) ? l.value = g : null),
       type: f.value,
       step: y.value,
       counter: d.value,
-      label: r(a),
-      hint: r(u),
-      rules: r(c),
+      label: s(a),
+      hint: s(u),
+      rules: s(c),
       readonly: e.readonly
     }, null, 8, ["modelValue", "type", "step", "counter", "label", "hint", "rules", "readonly"]));
   }
-}), vn = /* @__PURE__ */ w({
+}), bn = /* @__PURE__ */ A({
   __name: "ModelTextareaField",
   props: /* @__PURE__ */ N({
     field: {},
@@ -977,25 +977,25 @@ const dn = w({
   }),
   emits: ["update:modelValue"],
   setup(e) {
-    const t = e, n = O(e, "modelValue"), { input: l, kind: o, label: a, hint: u, rules: c } = _(() => t.field, n, () => t.messages);
-    return (i, f) => (b(), $(r(St), {
-      modelValue: r(l),
-      "onUpdate:modelValue": f[0] || (f[0] = (y) => q(l) ? l.value = y : null),
-      class: pt({ "model-json-field": r(o) !== "longText" }),
-      label: r(a),
-      hint: r(u),
-      rules: r(c),
+    const t = e, n = x(e, "modelValue"), { input: l, kind: o, label: a, hint: u, rules: c } = _(() => t.field, n, () => t.messages);
+    return (i, f) => (b(), V(s(xt), {
+      modelValue: s(l),
+      "onUpdate:modelValue": f[0] || (f[0] = (y) => K(l) ? l.value = y : null),
+      class: $t({ "model-json-field": s(o) !== "longText" }),
+      label: s(a),
+      hint: s(u),
+      rules: s(c),
       readonly: e.readonly,
       "auto-grow": "",
       rows: "3"
     }, null, 8, ["modelValue", "class", "label", "hint", "rules", "readonly"]));
   }
-}), it = (e, t) => {
+}), ut = (e, t) => {
   const n = e.__vccOpts || e;
   for (const [l, o] of t)
     n[l] = o;
   return n;
-}, ue = /* @__PURE__ */ it(vn, [["__scopeId", "data-v-9ba3dee9"]]), ut = /* @__PURE__ */ w({
+}, de = /* @__PURE__ */ ut(bn, [["__scopeId", "data-v-9ba3dee9"]]), dt = /* @__PURE__ */ A({
   __name: "ModelField",
   props: /* @__PURE__ */ N({
     field: {},
@@ -1009,35 +1009,35 @@ const dn = w({
   }),
   emits: ["update:modelValue"],
   setup(e) {
-    const t = e, n = O(e, "modelValue"), l = {
-      integer: K,
-      number: K,
-      text: K,
-      date: K,
-      time: K,
-      datetime: K,
-      longText: ue,
-      json: ue,
-      boolean: ln,
-      enum: ie,
-      multiEnum: ie,
-      tags: ie,
-      object: cn,
-      objectList: fn
-    }, o = ot(() => t.models), a = m(() => U(t.field)), u = m(() => {
-      const i = Ct(t.field);
+    const t = e, n = x(e, "modelValue"), l = {
+      integer: z,
+      number: z,
+      text: z,
+      date: z,
+      time: z,
+      datetime: z,
+      longText: de,
+      json: de,
+      boolean: sn,
+      enum: ue,
+      multiEnum: ue,
+      tags: ue,
+      object: yn,
+      objectList: gn
+    }, o = rt(() => t.models), a = m(() => U(t.field)), u = m(() => {
+      const i = Ut(t.field);
       return i !== void 0 ? o.value(i) : void 0;
     }), c = m(() => {
       if (a.value !== "unsupported")
-        return (a.value === "object" || a.value === "objectList") && u.value === void 0 ? ue : l[a.value];
+        return (a.value === "object" || a.value === "objectList") && u.value === void 0 ? de : l[a.value];
     });
-    return (i, f) => c.value === void 0 ? (b(), $(r(Qe), {
+    return (i, f) => c.value === void 0 ? (b(), V(s(_e), {
       key: 0,
-      "model-value": r(pe)(e.field, n.value),
-      label: r(D)(e.field),
+      "model-value": s(ge)(e.field, n.value),
+      label: s(D)(e.field),
       hint: e.field.description,
       readonly: ""
-    }, null, 8, ["model-value", "label", "hint"])) : u.value !== void 0 ? (b(), $(J(c.value), {
+    }, null, 8, ["model-value", "label", "hint"])) : u.value !== void 0 ? (b(), V(G(c.value), {
       key: 1,
       modelValue: n.value,
       "onUpdate:modelValue": f[0] || (f[0] = (y) => n.value = y),
@@ -1046,7 +1046,7 @@ const dn = w({
       mode: e.mode,
       readonly: e.readonly,
       messages: e.messages
-    }, null, 8, ["modelValue", "field", "model", "mode", "readonly", "messages"])) : (b(), $(J(c.value), {
+    }, null, 8, ["modelValue", "field", "model", "mode", "readonly", "messages"])) : (b(), V(G(c.value), {
       key: 2,
       modelValue: n.value,
       "onUpdate:modelValue": f[1] || (f[1] = (y) => n.value = y),
@@ -1055,10 +1055,10 @@ const dn = w({
       messages: e.messages
     }, null, 8, ["modelValue", "field", "readonly", "messages"]));
   }
-}), yn = {
+}), hn = {
   key: 1,
   class: "d-flex ga-2"
-}, Mn = /* @__PURE__ */ w({
+}, Nn = /* @__PURE__ */ A({
   __name: "ModelForm",
   props: /* @__PURE__ */ N({
     model: {},
@@ -1077,79 +1077,79 @@ const dn = w({
   }),
   emits: /* @__PURE__ */ N(["submit", "cancel"], ["update:modelValue"]),
   setup(e, { expose: t, emit: n }) {
-    const l = e, o = O(e, "modelValue"), a = n;
-    ot(() => l.models);
-    const u = on(() => l.components), c = $e(), i = m(() => Object.keys(c).filter((p) => p.startsWith("field."))), f = m(() => at(l.model)), y = m(() => ({
+    const l = e, o = x(e, "modelValue"), a = n;
+    rt(() => l.models);
+    const u = dn(() => l.components), c = Ve(), i = m(() => Object.keys(c).filter((p) => p.startsWith("field."))), f = m(() => ot(l.model)), y = m(() => ({
       submit: v,
       cancel: g,
-      validate: s,
+      validate: r,
       mode: l.mode,
       record: o.value,
       submitText: l.submitText ?? f.value.submitText ?? "Save",
       cancelText: l.cancelText ?? f.value.cancelText ?? "Cancel"
     })), d = X();
-    async function s() {
+    async function r() {
       return (await d.value?.validate())?.valid ?? !1;
     }
     async function v() {
-      await s() && a("submit", o.value);
+      await r() && a("submit", o.value);
     }
     function g() {
       a("cancel");
     }
-    return Y(() => l.mode, (p) => {
-      p === "create" && (o.value = { ...Te(l.model), ...o.value });
+    return J(() => l.mode, (p) => {
+      p === "create" && (o.value = { ...Oe(l.model), ...o.value });
     }, { immediate: !0 }), t({
-      validate: s,
+      validate: r,
       resetValidation: () => d.value?.resetValidation()
-    }), (p, A) => (b(), $(r(Mt), {
+    }), (p, E) => (b(), V(s(Nt), {
       ref_key: "form",
       ref: d,
-      onSubmit: gt(v, ["prevent"])
+      onSubmit: Vt(v, ["prevent"])
     }, {
-      default: h(() => [
-        k(Ae, {
+      default: $(() => [
+        M(Ae, {
           modelValue: o.value,
-          "onUpdate:modelValue": A[0] || (A[0] = (T) => o.value = T),
+          "onUpdate:modelValue": E[0] || (E[0] = (O) => o.value = O),
           model: e.model,
           mode: e.mode,
           fields: e.fields,
           exclude: e.exclude,
           messages: e.messages
-        }, Ve({ _: 2 }, [
-          r(c).default ? {
+        }, ke({ _: 2 }, [
+          s(c).default ? {
             name: "default",
-            fn: h((T) => [
-              z(p.$slots, "default", Z(de(T)))
+            fn: $((O) => [
+              Y(p.$slots, "default", Z(ce(O)))
             ]),
             key: "0"
           } : void 0,
-          P(i.value, (T) => ({
-            name: T,
-            fn: h((S) => [
-              z(p.$slots, T, Z(de(S)))
+          P(i.value, (O) => ({
+            name: O,
+            fn: $((T) => [
+              Y(p.$slots, O, Z(ce(T)))
             ])
           }))
         ]), 1032, ["modelValue", "model", "mode", "fields", "exclude", "messages"]),
-        e.mode !== "view" ? z(p.$slots, "actions", Z(te({ key: 0 }, y.value)), () => [
-          e.hideActions ? I("", !0) : (b(), C(B, { key: 0 }, [
-            f.value.actions !== void 0 ? (b(), $(J(r(u)(f.value.actions)), Z(te({ key: 0 }, y.value)), null, 16)) : (b(), C("div", yn, [
-              k(r(Tt)),
-              k(r(L), {
+        e.mode !== "view" ? Y(p.$slots, "actions", Z(te({ key: 0 }, y.value)), () => [
+          e.hideActions ? I("", !0) : (b(), C(q, { key: 0 }, [
+            f.value.actions !== void 0 ? (b(), V(G(s(u)(f.value.actions)), Z(te({ key: 0 }, y.value)), null, 16)) : (b(), C("div", hn, [
+              M(s(Ft)),
+              M(s(L), {
                 variant: "text",
                 onClick: g
               }, {
-                default: h(() => [
-                  F(j(y.value.cancelText), 1)
+                default: $(() => [
+                  w(j(y.value.cancelText), 1)
                 ]),
                 _: 1
               }),
-              k(r(L), {
+              M(s(L), {
                 type: "submit",
                 color: "primary"
               }, {
-                default: h(() => [
-                  F(j(y.value.submitText), 1)
+                default: $(() => [
+                  w(j(y.value.submitText), 1)
                 ]),
                 _: 1
               })
@@ -1160,10 +1160,10 @@ const dn = w({
       _: 3
     }, 512));
   }
-}), pn = { class: "model-table-filters d-flex flex-wrap align-center ga-3" }, gn = {
+}), $n = { class: "model-table-filters d-flex flex-wrap align-center ga-3" }, Vn = {
   key: 0,
   class: "d-flex align-center"
-}, bn = /* @__PURE__ */ w({
+}, kn = /* @__PURE__ */ A({
   __name: "ModelTableFilters",
   props: /* @__PURE__ */ N({
     model: {},
@@ -1177,24 +1177,24 @@ const dn = w({
   }),
   emits: ["update:filters", "update:sort"],
   setup(e) {
-    const t = e, n = O(e, "filters"), l = O(e, "sort"), o = m(() => t.filterOptions.filter((s) => s.input === "value")), a = m(() => t.filterOptions.filter((s) => s.input === "switch")), u = m(() => t.filterOptions.some((s) => Fe(s, n.value[s.name])));
-    function c(s, v) {
+    const t = e, n = x(e, "filters"), l = x(e, "sort"), o = m(() => t.filterOptions.filter((r) => r.input === "value")), a = m(() => t.filterOptions.filter((r) => r.input === "switch")), u = m(() => t.filterOptions.some((r) => we(r, n.value[r.name])));
+    function c(r, v) {
       const g = { ...n.value };
-      v == null || v === "" || v === !1 ? delete g[s] : g[s] = v, n.value = g;
+      v == null || v === "" || v === !1 ? delete g[r] : g[r] = v, n.value = g;
     }
-    const i = m(() => t.sortOptions.find((s) => s.key === l.value[0]?.key)), f = m(() => t.sortOptions.map((s) => ({ title: Gt(t.model, s), value: s.key })));
-    function y(s) {
-      const v = t.sortOptions.find((g) => g.key === s);
+    const i = m(() => t.sortOptions.find((r) => r.key === l.value[0]?.key)), f = m(() => t.sortOptions.map((r) => ({ title: Xt(t.model, r), value: r.key })));
+    function y(r) {
+      const v = t.sortOptions.find((g) => g.key === r);
       l.value = v !== void 0 ? [{ key: v.key, order: v.directions[0] }] : [];
     }
     function d() {
-      const [s, ...v] = l.value;
-      l.value = [{ key: s.key, order: s.order === "asc" ? "desc" : "asc" }, ...v];
+      const [r, ...v] = l.value;
+      l.value = [{ key: r.key, order: r.order === "asc" ? "desc" : "asc" }, ...v];
     }
-    return (s, v) => (b(), C("div", pn, [
-      (b(!0), C(B, null, P(o.value, (g) => (b(), $(ut, {
+    return (r, v) => (b(), C("div", $n, [
+      (b(!0), C(q, null, P(o.value, (g) => (b(), V(dt, {
         key: g.name,
-        field: r(Zt)(e.model, g),
+        field: s(Qt)(e.model, g),
         "model-value": n.value[g.name] ?? null,
         class: "model-table-filter",
         density: "compact",
@@ -1203,17 +1203,17 @@ const dn = w({
         clearable: "",
         "onUpdate:modelValue": (p) => c(g.name, p)
       }, null, 8, ["field", "model-value", "onUpdate:modelValue"]))), 128)),
-      (b(!0), C(B, null, P(a.value, (g) => (b(), $(r(He), {
+      (b(!0), C(q, null, P(a.value, (g) => (b(), V(s(We), {
         key: g.name,
-        label: r(lt)(e.model, g),
+        label: s(at)(e.model, g),
         "model-value": n.value[g.name] === !0,
         class: "flex-grow-0",
         density: "compact",
         "hide-details": "",
         "onUpdate:modelValue": (p) => c(g.name, p === !0)
       }, null, 8, ["label", "model-value", "onUpdate:modelValue"]))), 128)),
-      e.sortOptions.length > 0 ? (b(), C("div", gn, [
-        k(r(Xe), {
+      e.sortOptions.length > 0 ? (b(), C("div", Vn, [
+        M(s(Qe), {
           "model-value": i.value?.key ?? null,
           items: f.value,
           label: "Sort by",
@@ -1224,7 +1224,7 @@ const dn = w({
           clearable: "",
           "onUpdate:modelValue": y
         }, null, 8, ["model-value", "items"]),
-        i.value !== void 0 && i.value.directions.length > 1 ? (b(), $(r(L), {
+        i.value !== void 0 && i.value.directions.length > 1 ? (b(), V(s(L), {
           key: 0,
           icon: l.value[0].order === "asc" ? "$sortAsc" : "$sortDesc",
           "aria-label": l.value[0].order === "asc" ? "Ascending" : "Descending",
@@ -1233,20 +1233,20 @@ const dn = w({
           onClick: d
         }, null, 8, ["icon", "aria-label"])) : I("", !0)
       ])) : I("", !0),
-      u.value ? (b(), $(r(L), {
+      u.value ? (b(), V(s(L), {
         key: 1,
         variant: "text",
         size: "small",
         onClick: v[0] || (v[0] = (g) => n.value = {})
       }, {
-        default: h(() => [...v[1] || (v[1] = [
-          F("Clear filters", -1)
+        default: $(() => [...v[1] || (v[1] = [
+          w("Clear filters", -1)
         ])]),
         _: 1
       })) : I("", !0)
     ]));
   }
-}), hn = /* @__PURE__ */ it(bn, [["__scopeId", "data-v-fe979876"]]), $n = { class: "model-table" }, Tn = /* @__PURE__ */ w({
+}), Sn = /* @__PURE__ */ ut(kn, [["__scopeId", "data-v-fe979876"]]), Mn = { class: "model-table" }, Fn = /* @__PURE__ */ A({
   inheritAttrs: !1,
   __name: "ModelTable",
   props: /* @__PURE__ */ N({
@@ -1272,70 +1272,81 @@ const dn = w({
   }),
   emits: /* @__PURE__ */ N(["update:query"], ["update:filters", "update:sort", "update:page", "update:itemsPerPage"]),
   setup(e, { emit: t }) {
-    const n = e, l = O(e, "filters"), o = O(e, "sort"), a = O(e, "page"), u = O(e, "itemsPerPage"), c = t, i = $e(), f = /* @__PURE__ */ new Set(["integer", "number"]), y = /* @__PURE__ */ new Set(["json", "object", "objectList", "tags", "multiEnum", "unsupported"]), d = m(() => tt(n.model, n.fields, n.exclude)), s = m(() => Jt(n.model)), v = m(() => n.itemsLength !== void 0), g = m(() => s.value ? nt(n.model) : []), p = m(() => s.value ? Ne(n.model) : []), A = m(() => new Set(g.value.map((M) => M.field).filter(Boolean))), T = m(() => new Set(d.value.map((M) => M.name))), S = m(() => g.value.filter((M, x) => M.field === void 0 || !T.value.has(M.field) || g.value.findIndex((V) => V.field === M.field) !== x)), E = m(() => d.value.map((M) => {
-      const x = U(M);
+    const n = e, l = x(e, "filters"), o = x(e, "sort"), a = x(e, "page"), u = x(e, "itemsPerPage"), c = t, i = Ve(), f = /* @__PURE__ */ new Set(["integer", "number"]), y = /* @__PURE__ */ new Set(["json", "object", "objectList", "tags", "multiEnum", "unsupported"]), d = m(() => nt(n.model, n.fields, n.exclude)), r = m(() => Wt(n.model)), v = m(() => n.itemsLength !== void 0), g = m(() => r.value ? lt(n.model) : []), p = m(() => r.value ? Fe(n.model) : []), E = m(() => new Set(g.value.map((h) => h.field).filter(Boolean))), O = m(() => new Set(d.value.map((h) => h.name))), T = (h) => g.value.find((k) => k.key === h) ?? g.value.find((k) => k.field === h), F = m(() => g.value.filter((h) => h.field === void 0 || !O.value.has(h.field) ? !0 : h.key !== T(h.field)?.key)), ct = m(() => d.value.map((h) => {
+      const k = U(h);
       return {
-        title: D(M),
-        key: M.name,
-        align: f.has(x) ? "end" : "start",
-        sortable: s.value ? A.value.has(M.name) : !y.has(x)
+        title: D(h),
+        key: h.name,
+        align: f.has(k) ? "end" : "start",
+        sortable: r.value ? E.value.has(h.name) : !y.has(k)
       };
-    })), Ee = m({
-      get: () => o.value,
-      set: (M) => {
-        o.value = M.map((x) => {
-          const V = we(n.model, x.key)?.directions ?? ["asc", "desc"];
-          return V.includes(x.order) ? x : { key: x.key, order: V[0] };
+    }));
+    function mt(h, k) {
+      if (k === void 0) return h.directions[0];
+      const S = k === "asc" ? "desc" : "asc";
+      return h.directions.includes(S) ? S : void 0;
+    }
+    const Ee = m({
+      get: () => o.value.map((h) => {
+        const k = ae(n.model, h.key)?.field;
+        return k !== void 0 && O.value.has(k) ? { key: k, order: h.order } : h;
+      }),
+      set: (h) => {
+        o.value = h.flatMap((k) => {
+          const S = T(k.key);
+          if (S === void 0) return [k];
+          const B = o.value.find((ht) => ae(n.model, ht.key)?.field === k.key), De = mt(S, B?.order);
+          return De === void 0 ? [] : [{ key: k.key, order: De }];
         });
       }
-    }), je = m(() => ({ functions: n.functions, predicates: n.predicates })), Ce = m(() => Xt(n.model, n.items, l.value, je.value)), Ie = m(() => Qt(n.model, Ce.value, o.value, je.value)), dt = m(() => u.value <= 0 ? Ie.value : Ie.value.slice((a.value - 1) * u.value, a.value * u.value)), ct = m(() => !s.value || v.value ? n.items : dt.value), mt = m(() => s.value && !v.value ? Ce.value.length : n.itemsLength);
-    Y(l, () => {
+    }), je = m(() => ({ functions: n.functions, predicates: n.predicates })), Ce = m(() => tn(n.model, n.items, l.value, je.value)), Ie = m(() => nn(n.model, Ce.value, o.value, je.value)), ft = m(() => u.value <= 0 ? Ie.value : Ie.value.slice((a.value - 1) * u.value, a.value * u.value)), vt = m(() => !r.value || v.value ? n.items : ft.value), yt = m(() => r.value && !v.value ? Ce.value.length : n.itemsLength);
+    J(l, () => {
       a.value = 1;
-    }, { deep: !0 }), Y([s, v, o, l, a, u], () => {
-      s.value && v.value && c("update:query", en(n.model, { sort: o.value, filters: l.value, page: a.value, itemsPerPage: u.value }));
+    }, { deep: !0 }), J([r, v, o, l, a, u], () => {
+      r.value && v.value && c("update:query", an(n.model, { sort: o.value, filters: l.value, page: a.value, itemsPerPage: u.value }));
     }, { immediate: !0, deep: !0 });
-    const ft = m(() => n.itemKey ?? Dt(n.model) ?? "id"), vt = m(() => new Set(d.value.map((M) => `item.${M.name}`))), yt = m(() => Object.keys(i).filter((M) => !vt.value.has(M)));
-    return (M, x) => (b(), C("div", $n, [
-      s.value && e.filterBar && (p.value.length > 0 || S.value.length > 0) ? (b(), $(hn, {
+    const pt = m(() => n.itemKey ?? Rt(n.model) ?? "id"), gt = m(() => new Set(d.value.map((h) => `item.${h.name}`))), bt = m(() => Object.keys(i).filter((h) => !gt.value.has(h)));
+    return (h, k) => (b(), C("div", Mn, [
+      r.value && e.filterBar && (p.value.length > 0 || F.value.length > 0) ? (b(), V(Sn, {
         key: 0,
         filters: l.value,
-        "onUpdate:filters": x[0] || (x[0] = (V) => l.value = V),
+        "onUpdate:filters": k[0] || (k[0] = (S) => l.value = S),
         sort: o.value,
-        "onUpdate:sort": x[1] || (x[1] = (V) => o.value = V),
+        "onUpdate:sort": k[1] || (k[1] = (S) => o.value = S),
         model: e.model,
         "filter-options": p.value,
-        "sort-options": S.value,
+        "sort-options": F.value,
         class: "mb-2"
       }, null, 8, ["filters", "sort", "model", "filter-options", "sort-options"])) : I("", !0),
-      (b(), $(J(s.value || e.itemsLength !== void 0 ? r(xt) : r(Ot)), te(M.$attrs, {
+      (b(), V(G(r.value || e.itemsLength !== void 0 ? s(wt) : s(At)), te(h.$attrs, {
         page: a.value,
-        "onUpdate:page": x[2] || (x[2] = (V) => a.value = V),
+        "onUpdate:page": k[2] || (k[2] = (S) => a.value = S),
         "items-per-page": u.value,
-        "onUpdate:itemsPerPage": x[3] || (x[3] = (V) => u.value = V),
-        headers: E.value,
-        items: ct.value,
-        "item-value": ft.value,
-        "items-length": mt.value
-      }, bt(s.value ? { "update:sortBy": (V) => {
-        Ee.value = V;
+        "onUpdate:itemsPerPage": k[3] || (k[3] = (S) => u.value = S),
+        headers: ct.value,
+        items: vt.value,
+        "item-value": pt.value,
+        "items-length": yt.value
+      }, kt(r.value ? { "update:sortBy": (S) => {
+        Ee.value = S;
       } } : {}), {
-        "sort-by": s.value ? Ee.value : void 0
-      }), Ve({ _: 2 }, [
-        P(d.value, (V) => ({
-          name: `item.${V.name}`,
-          fn: h((G) => [
-            z(M.$slots, `item.${V.name}`, te(G, {
-              field: V,
-              formatted: r(pe)(V, G.value, e.locale)
+        "sort-by": r.value ? Ee.value : void 0
+      }), ke({ _: 2 }, [
+        P(d.value, (S) => ({
+          name: `item.${S.name}`,
+          fn: $((B) => [
+            Y(h.$slots, `item.${S.name}`, te(B, {
+              field: S,
+              formatted: s(ge)(S, B.value, e.locale)
             }), () => [
-              F(j(r(pe)(V, G.value, e.locale)), 1)
+              w(j(s(ge)(S, B.value, e.locale)), 1)
             ])
           ])
         })),
-        P(yt.value, (V) => ({
-          name: V,
-          fn: h((G) => [
-            z(M.$slots, V, Z(de(G ?? {})))
+        P(bt.value, (S) => ({
+          name: S,
+          fn: $((B) => [
+            Y(h.$slots, S, Z(ce(B ?? {})))
           ])
         }))
       ]), 1040, ["page", "items-per-page", "headers", "items", "item-value", "items-length", "sort-by"]))
@@ -1343,61 +1354,61 @@ const dn = w({
   }
 });
 export {
-  be as FormComponentsKey,
-  _e as INTEGER_RANGES,
-  ln as ModelBooleanField,
-  ut as ModelField,
+  he as FormComponentsKey,
+  et as INTEGER_RANGES,
+  sn as ModelBooleanField,
+  dt as ModelField,
   Ae as ModelFields,
-  Mn as ModelForm,
-  dn as ModelFormField,
-  an as ModelInputControl,
-  cn as ModelObjectField,
-  fn as ModelObjectListField,
-  ie as ModelSelectField,
-  Tn as ModelTable,
-  hn as ModelTableFilters,
-  K as ModelTextField,
-  ue as ModelTextareaField,
-  Je as ModelsKey,
-  Re as defaultMessages,
-  Te as emptyRecord,
-  Se as enumValues,
+  Nn as ModelForm,
+  vn as ModelFormField,
+  un as ModelInputControl,
+  yn as ModelObjectField,
+  gn as ModelObjectListField,
+  ue as ModelSelectField,
+  Fn as ModelTable,
+  Sn as ModelTableFilters,
+  z as ModelTextField,
+  de as ModelTextareaField,
+  Ge as ModelsKey,
+  Be as defaultMessages,
+  Oe as emptyRecord,
+  Me as enumValues,
   R as fieldConstraints,
   U as fieldKind,
   D as fieldLabel,
-  Oe as fieldRules,
-  Zt as filterField,
-  lt as filterLabel,
-  Xt as filterRows,
-  tn as formField,
-  at as formOf,
-  ae as formOptions,
-  pe as formatValue,
-  ye as fromInput,
-  Jt as hasListOptions,
+  Ne as fieldRules,
+  Qt as filterField,
+  at as filterLabel,
+  tn as filterRows,
+  on as formField,
+  ot as formOf,
+  oe as formOptions,
+  ge as formatValue,
+  pe as fromInput,
+  Wt as hasListOptions,
   se as humanize,
-  qt as inputRules,
-  It as isEditable,
+  Jt as inputRules,
+  Pt as isEditable,
   Q as isEmpty,
-  Fe as isFilterOn,
-  Me as isRequired,
-  et as isVisible,
-  Ne as listFilterOptions,
-  en as listQuery,
-  nt as listSortOptions,
-  Dt as primaryKeyField,
-  zt as recordErrors,
-  Ct as referencedModel,
+  we as isFilterOn,
+  Te as isRequired,
+  tt as isVisible,
+  Fe as listFilterOptions,
+  an as listQuery,
+  lt as listSortOptions,
+  Rt as primaryKeyField,
+  Zt as recordErrors,
+  Ut as referencedModel,
   xe as resolveMessages,
-  tt as selectFields,
-  Gt as sortLabel,
-  we as sortOptionOf,
-  _t as sortParameter,
-  Qt as sortRows,
-  Pe as toInput,
-  ze as toResolver,
+  nt as selectFields,
+  Xt as sortLabel,
+  ae as sortOptionOf,
+  ln as sortParameter,
+  nn as sortRows,
+  Re as toInput,
+  Ye as toResolver,
   _ as useFieldInput,
-  sn as useFormComponents,
-  un as useFormFields,
-  ot as useModels
+  cn as useFormComponents,
+  fn as useFormFields,
+  rt as useModels
 };

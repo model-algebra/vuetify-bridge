@@ -304,11 +304,14 @@ Columns get the field label as title. Numbers are right-aligned. JSON, nested re
 
 A model that declares `sortable` or `filterable` fields, `sortings` or `filters` is sorted and filtered as it declares:
 
-- Only columns of sortable fields are sortable; a column sorts by the first definition of its field, in the
-  directions it allows.
+- Only columns of sortable fields are sortable. A click on a column sorts it by the most relevant definition of its
+  field — the unnamed one if the field has it, the first one otherwise — in the direction the model allows; the next
+  click reverses the direction, and the one after that leaves the column unsorted. A column that sorts one way only
+  is unsorted by the second click.
 - A filter bar above the table has a control for each filter: a field of the field's type (or of the argument's type)
   for filters that take a value, a checkbox for filters that are only switched on. Its "Sort by" choice offers the
-  sort orders of the model, the other named definitions of fields, and sortable fields without columns.
+  sort orders of the model, the named definitions of fields other than the one their column sorts by, and sortable
+  fields without columns. The column of a sort order is marked as sorted, whichever definition sorts it.
 - Functions and predicates are looked up by name in the `functions` and `predicates` props:
   `function(value, row)` and `predicate(value, row[, argument])` for fields, `function(row)` and
   `predicate(row[, argument])` for the model. Comparisons with missing values are false, as in SQL.
